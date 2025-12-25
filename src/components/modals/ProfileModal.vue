@@ -1,5 +1,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useNodeGroupStore } from '../../stores/nodeGroups';
 import Modal from '../forms/Modal.vue';
 
 const props = defineProps({
@@ -10,11 +12,16 @@ const props = defineProps({
   allManualNodes: Array,
 });
 
+const nodeGroupStore = useNodeGroupStore();
+const { items: nodeGroups } = storeToRefs(nodeGroupStore);
+
 const emit = defineEmits(['update:show', 'save']);
 
 const localProfile = ref({});
 const subscriptionSearchTerm = ref('');
 const nodeSearchTerm = ref('');
+const groupSearchTerm = ref('');
+const nodeSelectionTab = ref('byNode'); // 'byNode' | 'byGroup'
 
 // 国家/地区代码到旗帜和中文名称的映射
 const countryCodeMap = {
@@ -103,9 +110,8 @@ const filteredSubscriptions = computed(() => {
 });
 
 const filteredManualNodes = computed(() => {
-  if (!nodeSearchTerm.value) {
-    return props.allManualNodes;
-  }
+  if (!nodeSearchTerm.value) return props.allManualNodes;
+  
   const lowerCaseSearchTerm = nodeSearchTerm.value.toLowerCase();
   const alternativeTerms = countryCodeMap[lowerCaseSearchTerm] || [];
 
@@ -124,6 +130,56 @@ const filteredManualNodes = computed(() => {
     return false;
   });
 });
+
+// 过滤分组列表
+const filteredGroups = computed(() => {
+  if (!groupSearchTerm.value) return nodeGroups.value;
+  
+  const query = groupSearchTerm.value.toLowerCase();
+  return nodeGroups.value.filter(group => 
+    group.name && group.name.toLowerCase().includes(query)
+  );
+});
+
+// 计算分组的选中状态
+const getGroupCheckState = (group) => {
+  if (!group.nodeIds || group.nodeIds.length === 0) return 'unchecked';
+  
+  const selectedNodeIds = new Set(localProfile.value.manualNodes || []);
+  const selectedCount = group.nodeIds.filter(id => selectedNodeIds.has(id)).length;
+  
+  if (selectedCount === 0) return 'unchecked';
+  if (selectedCount === group.nodeIds.length) return 'checked';
+  return 'indeterminate';
+};
+
+// 切换分组选择
+const toggleGroupSelection = (group) => {
+  if (!group.nodeIds || group.nodeIds.length === 0) return;
+  
+  const state = getGroupCheckState(group);
+  const currentNodes = new Set(localProfile.value.manualNodes || []);
+  
+  if (state === 'checked') {
+    // 取消选中该分组的所有节点
+    group.nodeIds.forEach(id => currentNodes.delete(id));
+  } else {
+    // 选中该分组的所有节点
+    group.nodeIds.forEach(id => currentNodes.add(id));
+  }
+  
+  localProfile.value.manualNodes = Array.from(currentNodes);
+  
+  // 同时记录选择的分组ID(用于回显)
+  if (!localProfile.value.nodeGroupIds) {
+    localProfile.value.nodeGroupIds = [];
+  }
+  if (state === 'checked') {
+    localProfile.value.nodeGroupIds = localProfile.value.nodeGroupIds.filter(id => id !== group.id);
+  } else if (state === 'unchecked') {
+    localProfile.value.nodeGroupIds.push(group.id);
+  }
+};
 
 watch(() => props.profile, (newProfile) => {
   if (newProfile) {
@@ -146,20 +202,25 @@ watch(() => props.profile, (newProfile) => {
         enableNodeEmoji: null
       };
     }
+    // 初始化nodeGroupIds
+    if (!profileCopy.nodeGroupIds) {
+      profileCopy.nodeGroupIds = [];
+    }
     localProfile.value = profileCopy;
   } else {
     localProfile.value = { 
       name: '', 
       enabled: true, 
       subscriptions: [], 
-      manualNodes: [], 
+      manualNodes: [],
+      nodeGroupIds: [],
       customId: '', 
       expiresAt: '',
       prefixSettings: {
         enableManualNodes: null,
         enableSubscriptions: null,
         manualNodePrefix: '',
-        enableNodeEmoji: null // [新增] 初始化为 null (使用全局设置)
+        enableNodeEmoji: null
       }
     };
   }
@@ -223,7 +284,7 @@ const handleDeselectAll = (listName, sourceArray) => {
                 type="text"
                 id="profile-name"
                 v-model="localProfile.name"
-                placeholder="例如：家庭共享"
+                placeholder="例如:家庭共享"
                 class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-xs focus:outline-hidden focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white"
               >
             </div>
@@ -238,7 +299,7 @@ const handleDeselectAll = (listName, sourceArray) => {
                 placeholder="如: home, game (限字母、数字、-、_)"
                 class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-xs focus:outline-hidden focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white"
               >
-               <p class="text-xs text-gray-400 mt-1">设置后，订阅链接会更短，如 /token/home</p>
+               <p class="text-xs text-gray-400 mt-1">设置后,订阅链接会更短,如 /token/home</p>
             </div>
             <div>
               <label for="profile-subconverter" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -276,7 +337,7 @@ const handleDeselectAll = (listName, sourceArray) => {
                 v-model="localProfile.expiresAt"
                 class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-xs focus:outline-hidden focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white"
               >
-              <p class="text-xs text-gray-400 mt-1">设置此订阅组的到期时间，到期后将返回默认节点。</p>
+              <p class="text-xs text-gray-400 mt-1">设置此订阅组的到期时间,到期后将返回默认节点。</p>
             </div>
             
             <!-- 前缀设置部分 -->
@@ -286,7 +347,7 @@ const handleDeselectAll = (listName, sourceArray) => {
                 <div class="flex items-center justify-between">
                   <div>
                     <p class="text-sm font-medium text-gray-700 dark:text-gray-300">手动节点前缀</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">覆盖全局设置，控制是否为手动节点添加前缀</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">覆盖全局设置,控制是否为手动节点添加前缀</p>
                   </div>
                   <select 
                     v-model="localProfile.prefixSettings.enableManualNodes" 
@@ -311,7 +372,7 @@ const handleDeselectAll = (listName, sourceArray) => {
                 <div class="flex items-center justify-between">
                   <div>
                     <p class="text-sm font-medium text-gray-700 dark:text-gray-300">机场订阅前缀</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">覆盖全局设置，控制是否为订阅节点添加前缀</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">覆盖全局设置,控制是否为订阅节点添加前缀</p>
                   </div>
                   <select 
                     v-model="localProfile.prefixSettings.enableSubscriptions" 
@@ -337,7 +398,7 @@ const handleDeselectAll = (listName, sourceArray) => {
                   </select>
                 </div>
               </div>
-              <p class="text-xs text-gray-400 mt-1">单独为此订阅组配置前缀设置，优先级高于全局设置。</p>
+              <p class="text-xs text-gray-400 mt-1">单独为此订阅组配置前缀设置,优先级高于全局设置。</p>
             </div>
         </div>
 
@@ -384,34 +445,105 @@ const handleDeselectAll = (listName, sourceArray) => {
             <div v-if="allManualNodes.length > 0" class="space-y-2">
               <div class="flex justify-between items-center mb-2">
                 <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">选择手动节点</h4>
-                 <div class="space-x-2">
+              </div>
+              
+              <!-- 标签页切换 -->
+              <div class="flex border-b border-gray-200 dark:border-gray-700 mb-3">
+                <button
+                  @click="nodeSelectionTab = 'byNode'"
+                  type="button"
+                  class="px-4 py-2 text-sm font-medium transition-colors"
+                  :class="nodeSelectionTab === 'byNode' 
+                    ? 'text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400' 
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
+                >
+                  按节点选择
+                </button>
+                <button
+                  @click="nodeSelectionTab = 'byGroup'"
+                  type="button"
+                  class="px-4 py-2 text-sm font-medium transition-colors"
+                  :class="nodeSelectionTab === 'byGroup' 
+                    ? 'text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400' 
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
+                >
+                  按分组选择
+                </button>
+              </div>
+
+              <!-- 按节点选择标签页 -->
+              <div v-show="nodeSelectionTab === 'byNode'">
+                <div class="flex justify-between items-center mb-2">
+                  <div class="space-x-2">
                     <button @click="handleSelectAll('manualNodes', filteredManualNodes)" class="text-xs text-indigo-600 hover:underline">全选</button>
                     <button @click="handleDeselectAll('manualNodes', filteredManualNodes)" class="text-xs text-indigo-600 hover:underline">全不选</button>
+                  </div>
+                </div>
+                <div class="relative mb-2">
+                  <input
+                    type="text"
+                    v-model="nodeSearchTerm"
+                    placeholder="搜索节点..."
+                    class="w-full pl-9 pr-3 py-1.5 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-xs focus:outline-hidden focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                  <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                </div>
+                <div class="overflow-y-auto space-y-2 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg border dark:border-gray-700 h-48">
+                  <div v-for="node in filteredManualNodes" :key="node.id">
+                    <label class="flex items-center space-x-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        :checked="localProfile.manualNodes?.includes(node.id)"
+                        @change="toggleSelection('manualNodes', node.id)"
+                        class="h-4 w-4 rounded-sm border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                      />
+                      <span class="text-sm text-gray-800 dark:text-gray-200 truncate" :title="node.name">{{ node.name || '未命名节点' }}</span>
+                    </label>
+                  </div>
+                  <div v-if="filteredManualNodes.length === 0" class="text-center text-gray-500 text-sm py-4">
+                    没有找到匹配的节点。
+                  </div>
                 </div>
               </div>
-              <div class="relative mb-2">
-                <input
-                  type="text"
-                  v-model="nodeSearchTerm"
-                  placeholder="搜索节点..."
-                  class="w-full pl-9 pr-3 py-1.5 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-xs focus:outline-hidden focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
-                />
-                <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-              </div>
-               <div class="overflow-y-auto space-y-2 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg border dark:border-gray-700 h-48">
-                <div v-for="node in filteredManualNodes" :key="node.id">
-                  <label class="flex items-center space-x-3 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      :checked="localProfile.manualNodes?.includes(node.id)"
-                      @change="toggleSelection('manualNodes', node.id)"
-                      class="h-4 w-4 rounded-sm border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                    />
-                    <span class="text-sm text-gray-800 dark:text-gray-200 truncate" :title="node.name">{{ node.name || '未命名节点' }}</span>
-                  </label>
+
+              <!-- 按分组选择标签页 -->
+              <div v-show="nodeSelectionTab === 'byGroup'">
+                <div class="flex justify-between items-center mb-2">
+                  <div class="text-xs text-gray-500 dark:text-gray-400">
+                    勾选分组将选中该分组的所有节点
+                  </div>
                 </div>
-                <div v-if="filteredManualNodes.length === 0" class="text-center text-gray-500 text-sm py-4">
-                  没有找到匹配的节点。
+                <div class="relative mb-2">
+                  <input
+                    type="text"
+                    v-model="groupSearchTerm"
+                    placeholder="搜索分组..."
+                    class="w-full pl-9 pr-3 py-1.5 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-xs focus:outline-hidden focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                  <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                </div>
+                <div class="overflow-y-auto space-y-2 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg border dark:border-gray-700 h-48">
+                  <div v-for="group in filteredGroups" :key="group.id">
+                    <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 rounded p-2 transition-colors">
+                      <input
+                        type="checkbox"
+                        :checked="getGroupCheckState(group) === 'checked'"
+                        :indeterminate.prop="getGroupCheckState(group) === 'indeterminate'"
+                        @change="toggleGroupSelection(group)"
+                        class="h-4 w-4 rounded-sm border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                      />
+                      <span class="text-sm text-gray-800 dark:text-gray-200 flex-1">
+                        {{ group.name || '未命名分组' }}
+                        <span class="text-xs text-gray-500 ml-1">({{ group.nodeIds?.length || 0 }}个节点)</span>
+                      </span>
+                    </label>
+                  </div>
+                  <div v-if="filteredGroups.length === 0" class="text-center text-gray-500 text-sm py-4">
+                    {{ groupSearchTerm ? '没有找到匹配的分组' : '还没有节点分组' }}
+                  </div>
+                </div>
+                <div class="mt-2 text-xs text-gray-600 dark:text-gray-400">
+                  已选择: {{ localProfile.manualNodes?.length || 0 }} 个节点
                 </div>
               </div>
             </div>

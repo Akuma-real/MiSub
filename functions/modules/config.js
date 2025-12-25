@@ -7,6 +7,7 @@
 export const KV_KEY_SUBS = 'misub_subscriptions_v1';
 export const KV_KEY_PROFILES = 'misub_profiles_v1';
 export const KV_KEY_SETTINGS = 'worker_settings_v1';
+export const KV_KEY_NODE_GROUPS = 'misub_node_groups_v1';
 
 // 认证相关
 export const COOKIE_NAME = 'auth_session';
@@ -64,7 +65,12 @@ export const DEFAULT_SETTINGS = {
     NotifyThresholdDays: 3,
     NotifyThresholdPercent: 90,
     enableTrafficNode: true,
-    storageType: 'kv'
+    storageType: 'kv',
+    disguise: {
+        enabled: false,
+        pageType: 'default', // 'default' | 'redirect'
+        redirectUrl: ''
+    }
 };
 
 // 系统常量

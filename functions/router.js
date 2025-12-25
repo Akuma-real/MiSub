@@ -5,6 +5,7 @@
 
 import { handleLogin, handleLogout, requireAuth } from './routes/auth-routes.js';
 import { handleDataRequest, handleMisubsSave, handleSettingsRequest } from './routes/index.js';
+import { handleNodeGroupsRequest } from './routes/node-groups-routes.js';
 import { createJsonResponse } from './middleware/auth.js';
 import { DataMigrator, StorageFactory } from './storage-adapter.js';
 
@@ -116,6 +117,9 @@ export async function handleApiRequest(request, env) {
 
         case '/settings':
             return await handleSettingsRequest(request, env);
+
+        case '/node-groups':
+            return await handleNodeGroupsRequest(request, env);
 
         default:
             return createJsonResponse({ error: 'API route not found' }, 404);

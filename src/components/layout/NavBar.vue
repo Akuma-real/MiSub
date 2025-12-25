@@ -17,11 +17,12 @@ const props = defineProps({
 const emit = defineEmits(['logout']);
 
 const navItems = [
-  { name: '仪表盘', path: '/', icon: 'squares-2x2' },
-  { name: '机场订阅', path: '/groups', icon: 'rectangle-stack' },
+  { name: '仪表盘', path: '/', icon: 'home' },
+  { name: '订阅组', path: '/groups', icon: 'folder' },
+  { name: '我的订阅', path: '/subscriptions', icon: 'cloud' },
   { name: '手工节点', path: '/nodes', icon: 'cpu-chip' },
-  { name: '我的订阅', path: '/subscriptions', icon: 'cloud-arrow-down' },
-  { name: '设置', path: '/settings', icon: 'cog-6-tooth' },
+  { name: '节点分组', path: '/node-groups', icon: 'collection' },
+  { name: '设置', path: '/settings', icon: 'cog' }
 ];
 </script>
 
@@ -96,9 +97,10 @@ const navItems = [
                   :class="route.path === item.path ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'"
                 >
                   <svg v-if="item.name === '仪表盘'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform duration-200" :class="route.path === item.path ? 'scale-110' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
-                  <svg v-else-if="item.name === '机场订阅'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform duration-200" :class="route.path === item.path ? 'scale-110' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-                  <svg v-else-if="item.name === '手工节点'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform duration-200" :class="route.path === item.path ? 'scale-110' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" /></svg>
+                  <svg v-else-if="item.name === '订阅组'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform duration-200" :class="route.path === item.path ? 'scale-110' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg>
                   <svg v-else-if="item.name === '我的订阅'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform duration-200" :class="route.path === item.path ? 'scale-110' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" /></svg>
+                  <svg v-else-if="item.name === '手工节点'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform duration-200" :class="route.path === item.path ? 'scale-110' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" /></svg>
+                  <svg v-else-if="item.name === '节点分组'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform duration-200" :class="route.path === item.path ? 'scale-110' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                   <svg v-else-if="item.name === '设置'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform duration-200" :class="route.path === item.path ? 'scale-110' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                   
                   <span class="text-[10px] mt-1 font-medium">{{ item.name }}</span>

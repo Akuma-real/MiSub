@@ -5,6 +5,7 @@ import { useSubscriptionStore } from './subscriptions';
 import { useProfileStore } from './profiles';
 import { useSettingsStore } from './settings';
 import { useEditorStore } from './editor';
+import { useNodeGroupStore } from './nodeGroups';
 import { calculateDiff } from '../lib/diff.js';
 import { DEFAULT_SETTINGS } from '../constants/default-settings.js';
 
@@ -21,11 +22,13 @@ export const useDataStore = defineStore('data', () => {
     const profileStore = useProfileStore();
     const settingsStore = useSettingsStore();
     const editorStore = useEditorStore();
+    const nodeGroupStore = useNodeGroupStore();
 
     // --- State Proxies (maintain reactivity for storeToRefs) ---
     const subscriptions = computed(() => subscriptionStore.items);
     const profiles = computed(() => profileStore.items);
     const settings = computed(() => settingsStore.config);
+    const nodeGroups = computed(() => nodeGroupStore.items);
     // Editor state is handled by local refs below to solve the "direct assignment" requirement from instructions
 
 
@@ -158,6 +161,14 @@ export const useDataStore = defineStore('data', () => {
 
             lastUpdated.value = new Date();
             setCachedData(data);
+
+            // 获取节点分组数据
+            try {
+                await nodeGroupStore.fetchGroups();
+            } catch (error) {
+                console.error('Failed to fetch node groups:', error);
+                // 不阻塞主流程,分组获取失败不影响其他数据
+            }
 
         } catch (error) {
             console.error('Failed to fetch data:', error);
@@ -357,6 +368,7 @@ export const useDataStore = defineStore('data', () => {
         subscriptions,
         profiles,
         settings,
+        nodeGroups,
         isLoading,
         saveState,
         lastUpdated,

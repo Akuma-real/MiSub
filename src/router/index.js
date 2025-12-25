@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 const DashboardView = () => import('../views/DashboardView.vue');
 const SubscriptionGroupsView = () => import('../views/SubscriptionGroupsView.vue');
 const ManualNodesView = () => import('../views/ManualNodesView.vue');
+const NodeGroupsView = () => import('../views/NodeGroupsView.vue');
 const MySubscriptionsView = () => import('../views/MySubscriptionsView.vue');
 const SettingsView = () => import('../views/SettingsView.vue');
 
@@ -25,6 +26,12 @@ const routes = [
         name: 'ManualNodes',
         component: ManualNodesView,
         meta: { title: '手工节点' }
+    },
+    {
+        path: '/node-groups',
+        name: 'NodeGroups',
+        component: NodeGroupsView,
+        meta: { title: '节点分组' }
     },
     {
         path: '/subscriptions',

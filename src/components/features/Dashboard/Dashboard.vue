@@ -14,6 +14,7 @@ import RightPanel from '../../profiles/RightPanel.vue';
 import ProfilePanel from '../../profiles/ProfilePanel.vue';
 import SubscriptionPanel from '../../subscriptions/SubscriptionPanel.vue';
 import ManualNodePanel from '../../nodes/ManualNodePanel.vue';
+import NodeGroupPanel from '../../nodes/NodeGroupPanel.vue';
 import Modal from '../../forms/Modal.vue';
 import SkeletonLoader from '../../ui/SkeletonLoader.vue';
 import StatusIndicator from '../../ui/StatusIndicator.vue';
@@ -462,6 +463,9 @@ const formattedTotalRemainingTraffic = computed(() => formatBytes(totalRemaining
           @delete-all="showDeleteNodesModal = true"
           @reorder="reorderManualNodes"
         />
+
+        <!-- Node Group Panel -->
+        <NodeGroupPanel />
       </div>
       
       <!-- Right Column -->
