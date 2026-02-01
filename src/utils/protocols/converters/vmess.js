@@ -14,7 +14,7 @@ export function convertVmessToUrl(proxy) {
             v: "2",
             ps: proxy.name || proxy['server-name'] || 'VMess',
             add: proxy.server,
-            port: Number(proxy.port),
+            port: String(proxy.port),
             id: proxy.uuid || proxy['client-id'] || '',
             aid: String(proxy.alterId || proxy['alter-id'] || 0),
             scy: proxy.cipher || 'auto',  // 加密方式

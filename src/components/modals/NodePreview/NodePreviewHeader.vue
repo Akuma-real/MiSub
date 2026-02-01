@@ -42,10 +42,8 @@ defineEmits(['close']);
 
       <!-- 关闭按钮 -->
       <button
-        type="button"
         @click="$emit('close')"
         class="rounded-md bg-white dark:bg-gray-800 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-2"
-        aria-label="关闭"
       >
         <span class="sr-only">关闭</span>
         <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">

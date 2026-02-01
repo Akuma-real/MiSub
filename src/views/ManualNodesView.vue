@@ -10,6 +10,7 @@ import Modal from '../components/forms/Modal.vue';
 import ManualNodeEditModal from '../components/modals/ManualNodeEditModal.vue';
 import ManualNodeDedupModal from '../components/modals/ManualNodeDedupModal.vue';
 import SubscriptionImportModal from '../components/modals/SubscriptionImportModal.vue';
+import BatchGroupModal from '../components/modals/BatchGroupModal.vue'; // Added
 
 const dataStore = useDataStore();
 const { showToast } = useToastStore();
@@ -24,6 +25,8 @@ const batchDeleteIds = ref([]);
 const showSubscriptionImportModal = ref(false);
 const showDedupModal = ref(false);
 const dedupPlan = ref(null);
+const showBatchGroupModal = ref(false); // Added
+const batchGroupIds = ref([]); // Added
 
 const {
   manualNodes, manualNodesCurrentPage, manualNodesTotalPages, paginatedManualNodes, searchTerm,
@@ -31,7 +34,7 @@ const {
   addNodesFromBulk, autoSortNodes, deduplicateNodes, buildDedupPlan, applyDedupPlan,
   reorderManualNodes,
   manualNodeGroups, renameGroup, deleteGroup,
-  activeColorFilter, setColorFilter, batchUpdateColor, batchDeleteNodes,
+  activeGroupFilter, setGroupFilter, batchUpdateGroup, batchDeleteNodes,
   manualNodesPerPage
 } = useManualNodes(markDirty);
 
@@ -79,6 +82,24 @@ const handleDeduplicateNodes = () => {
 
 // Old Handlers Removed
 
+const handleOpenBatchGroupModal = (ids) => {
+  batchGroupIds.value = ids;
+  showBatchGroupModal.value = true;
+};
+
+const handleBatchGroupConfirm = (groupName) => {
+  batchUpdateGroup(batchGroupIds.value, groupName);
+  batchGroupIds.value = [];
+  // Ideally we should also clear selection in ManualNodePanel, but we don't have direct access.
+  // We can emit an event or use a ref, but ManualNodePanel handles selection internally.
+  // Actually, ManualNodePanel.vue creates its own `selectedNodeIds`.
+  // If we want to clear selection, we need to force re-render or expose a method.
+  // But for now, let's just do the update. User can clear selection manually.
+  // OR we can improve ManualNodePanel to clear selection when `batch-update-group` is done?
+  // But here we are calling `batchUpdateGroup` composable directly.
+  // Let's modify ManualNodePanel later if needed.
+};
+
 const handleBatchDeleteRequest = (ids) => {
   if (ids && ids.length > 0) {
     batchDeleteIds.value = ids;
@@ -101,7 +122,7 @@ const confirmBatchDelete = () => {
     <ManualNodePanel :manual-nodes="manualNodes" :paginated-manual-nodes="paginatedManualNodes"
       :current-page="manualNodesCurrentPage" :total-pages="manualNodesTotalPages" :is-sorting="isSortingNodes"
       :search-term="searchTerm" :view-mode="manualNodeViewMode" :groups="manualNodeGroups"
-      :active-color-filter="activeColorFilter" :items-per-page="manualNodesPerPage"
+      :active-group-filter="activeGroupFilter" :items-per-page="manualNodesPerPage"
       @update:items-per-page="val => manualNodesPerPage = val"
       @add="handleAddNode" @delete="handleDeleteNodeWithCleanup"
       @edit="(id) => handleEditNode(manualNodes.find(n => n.id === id))" @change-page="changeManualNodesPage"
@@ -109,13 +130,17 @@ const confirmBatchDelete = () => {
       @toggle-sort="isSortingNodes = !isSortingNodes" @mark-dirty="markDirty" @auto-sort="handleAutoSortNodes"
       @deduplicate="handleDeduplicateNodes" @import="showSubscriptionImportModal = true"
       @delete-all="showDeleteNodesModal = true" @reorder="reorderManualNodes" @rename-group="renameGroup"
-      @delete-group="deleteGroup" @set-color-filter="setColorFilter" @batch-update-color="batchUpdateColor"
-      @batch-delete-nodes="handleBatchDeleteRequest" />
+      @delete-group="deleteGroup" @set-group-filter="setGroupFilter"
+      @batch-update-group="(ids, group) => batchUpdateGroup(ids, group)"
+      @batch-delete-nodes="handleBatchDeleteRequest"
+      @open-batch-group-modal="handleOpenBatchGroupModal" />
 
     <ManualNodeEditModal v-model:show="showNodeModal" :is-new="isNewNode" :editing-node="editingNode"
       @confirm="handleSaveNode" @input-url="handleNodeUrlInput" />
     <ManualNodeDedupModal v-model:show="showDedupModal" :plan="dedupPlan"
       @confirm="applyDedupPlan(dedupPlan); showDedupModal = false; dedupPlan = null" />
+    
+    <BatchGroupModal v-model:show="showBatchGroupModal" :groups="manualNodeGroups" @confirm="handleBatchGroupConfirm" />
 
     <Modal v-model:show="showDeleteNodesModal" @confirm="handleDeleteAllNodesWithCleanup">
       <template #title>

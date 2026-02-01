@@ -45,7 +45,6 @@ const handleInput = () => emit('add-custom-node');
           v-model="customNodeInputModel"
           @input="handleInput"
           placeholder="👉 粘贴一个你的节点名称在这里进行测试..."
-          aria-label="测试节点名称"
           class="flex-1 text-xs border-0 bg-white dark:bg-gray-800/50 rounded-md ring-1 ring-indigo-200 dark:ring-indigo-800 focus:ring-indigo-500 px-2 py-1.5 dark:text-white"
         >
       </div>

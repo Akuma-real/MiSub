@@ -1,5 +1,5 @@
 // FILE: src/composables/useSubscriptions.js
-import { ref, computed, watch } from 'vue';
+import { ref, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useDataStore } from '../stores/useDataStore';
 import { useToastStore } from '../stores/toast.js';
@@ -42,7 +42,7 @@ export function useSubscriptions(markDirty) {
     }, 0);
   });
 
-  const subsTotalPages = computed(() => Math.max(1, Math.ceil(subscriptions.value.length / subsItemsPerPage)));
+  const subsTotalPages = computed(() => Math.ceil(subscriptions.value.length / subsItemsPerPage));
   const paginatedSubscriptions = computed(() => {
     const start = (subsCurrentPage.value - 1) * subsItemsPerPage;
     const end = start + subsItemsPerPage;
@@ -54,13 +54,6 @@ export function useSubscriptions(markDirty) {
     if (page < 1 || page > subsTotalPages.value) return;
     subsCurrentPage.value = page;
   }
-
-  watch(subsTotalPages, (totalPages) => {
-    const safeTotal = totalPages || 1;
-    if (subsCurrentPage.value > safeTotal) {
-      subsCurrentPage.value = safeTotal;
-    }
-  });
 
   async function handleUpdateNodeCount(subId, isInitialLoad = false) {
     // Find in the filtered list

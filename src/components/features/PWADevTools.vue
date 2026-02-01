@@ -67,10 +67,8 @@ onMounted(() => {
       <div class="flex items-center justify-between mb-3">
         <h3 class="text-sm font-bold">PWA 开发工具</h3>
         <button
-          type="button"
           @click="showDevTools = false"
           class="text-gray-400 hover:text-white"
-          aria-label="关闭开发工具"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -80,28 +78,22 @@ onMounted(() => {
       
       <div class="space-y-2">
         <button
-          type="button"
           @click="triggerInstallPrompt"
           class="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 text-sm rounded-md transition-colors"
-          aria-label="触发安装提示"
         >
           触发安装提示
         </button>
         
         <button
-          type="button"
           @click="checkPWAStatus"
           class="w-full px-3 py-2 bg-green-600 hover:bg-green-700 text-sm rounded-md transition-colors"
-          aria-label="检查 PWA 状态"
         >
           检查PWA状态
         </button>
         
         <button
-          type="button"
           @click="forceUpdate"
           class="w-full px-3 py-2 bg-orange-600 hover:bg-orange-700 text-sm rounded-md transition-colors"
-          aria-label="强制更新"
         >
           强制更新SW
         </button>
@@ -118,11 +110,9 @@ onMounted(() => {
   <!-- 开发环境提示按钮 -->
   <button
     v-if="isDev && !showDevTools"
-    type="button"
     @click="showDevTools = true"
     class="fixed bottom-4 left-4 z-40 w-12 h-12 bg-gray-900/80 hover:bg-gray-800 text-white rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110"
     title="PWA开发工具 (Ctrl+Shift+P)"
-    aria-label="打开 PWA 开发工具"
   >
     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />

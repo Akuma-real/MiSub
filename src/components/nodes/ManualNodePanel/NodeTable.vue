@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import draggable from 'vuedraggable';
 import ManualNodeCard from '../ManualNodeCard.vue';
 import ManualNodeList from '../ManualNodeList.vue';
@@ -8,15 +8,17 @@ const props = defineProps({
   manualNodes: { type: Array, default: () => [] },
   paginatedNodes: { type: Array, default: () => [] },
   filteredNodes: { type: Array, default: () => [] },
-  searchTerm: { type: String, default: '' },
+  localSearchTerm: { type: String, default: '' },
   isSorting: { type: Boolean, default: false },
   viewMode: { type: String, default: 'card' },
   isSelectionMode: { type: Boolean, default: false },
   selectedNodeIds: { type: Object, required: true },
-  currentPage: { type: Number, default: 1 },
-  totalPages: { type: Number, default: 1 },
+  searchPage: { type: Number, default: 1 },
+  searchTotalPages: { type: Number, default: 1 },
+  basePage: { type: Number, default: 1 },
+  baseTotalPages: { type: Number, default: 1 },
   draggableManualNodes: { type: Array, default: () => [] },
-  itemsPerPage: { type: Number, default: 24 }
+  itemsPerPage: { type: Number, default: 24 } // Added
 });
 
 const emit = defineEmits([
@@ -26,7 +28,8 @@ const emit = defineEmits([
   'delete',
   'sort-end',
   'change-page',
-  'update:itemsPerPage' // Added
+  'update:itemsPerPage', // Added
+  'set-group-filter' // Added
 ]);
 
 const draggableModel = computed({
@@ -34,35 +37,8 @@ const draggableModel = computed({
   set: (val) => emit('update:draggableManualNodes', val)
 });
 
-const displayPage = computed(() => props.currentPage);
-const displayTotalPages = computed(() => props.totalPages);
-
-const virtualListRef = ref(null);
-const virtualScrollTop = ref(0);
-const viewportHeight = ref(560);
-const ROW_HEIGHT = 72;
-const OVERSCAN = 6;
-
-const shouldVirtualize = computed(() => {
-  return props.viewMode === 'list' && !props.isSorting && props.paginatedNodes.length > 80;
-});
-
-const totalCount = computed(() => props.paginatedNodes.length);
-const totalHeight = computed(() => totalCount.value * ROW_HEIGHT);
-const startIndex = computed(() => {
-  if (!shouldVirtualize.value) return 0;
-  return Math.max(0, Math.floor(virtualScrollTop.value / ROW_HEIGHT) - OVERSCAN);
-});
-const endIndex = computed(() => {
-  if (!shouldVirtualize.value) return totalCount.value;
-  const visibleCount = Math.ceil(viewportHeight.value / ROW_HEIGHT) + OVERSCAN * 2;
-  return Math.min(totalCount.value, startIndex.value + visibleCount);
-});
-const offsetY = computed(() => startIndex.value * ROW_HEIGHT);
-const visibleNodes = computed(() => {
-  if (!shouldVirtualize.value) return props.paginatedNodes;
-  return props.paginatedNodes.slice(startIndex.value, endIndex.value);
-});
+const displayPage = computed(() => (props.localSearchTerm ? props.searchPage : props.basePage));
+const displayTotalPages = computed(() => (props.localSearchTerm ? props.searchTotalPages : props.baseTotalPages));
 
 const pageInput = ref('');
 // When page changes externally, update input
@@ -84,32 +60,6 @@ const jumpToPage = () => {
   handleChangePage(pageInput.value);
 };
 
-const updateViewportHeight = () => {
-  if (virtualListRef.value) {
-    viewportHeight.value = virtualListRef.value.clientHeight || viewportHeight.value;
-  }
-};
-
-const handleVirtualScroll = (event) => {
-  virtualScrollTop.value = event.target.scrollTop;
-};
-
-watch([() => props.currentPage, () => props.paginatedNodes.length], () => {
-  if (virtualListRef.value) {
-    virtualListRef.value.scrollTop = 0;
-  }
-  virtualScrollTop.value = 0;
-});
-
-onMounted(() => {
-  updateViewportHeight();
-  window.addEventListener('resize', updateViewportHeight);
-});
-
-onUnmounted(() => {
-  window.removeEventListener('resize', updateViewportHeight);
-});
-
 // Handle items per page change
 const handleItemsPerPageChange = (event) => {
   emit('update:itemsPerPage', parseInt(event.target.value));
@@ -117,10 +67,10 @@ const handleItemsPerPageChange = (event) => {
 </script>
 
 <template>
-  <div v-if="manualNodes.length > 0">
+  <div v-if="manualNodes.length > 0" :class="{ 'pb-48': isSelectionMode }">
     <!-- 如果有搜索词，显示搜索提示 -->
-    <div v-if="searchTerm && filteredNodes.length === 0" class="text-center py-8 text-gray-500">
-      <p>没有找到包含 "{{ searchTerm }}" 的节点</p>
+    <div v-if="localSearchTerm && filteredNodes.length === 0" class="text-center py-8 text-gray-500">
+      <p>没有找到包含 "{{ localSearchTerm }}" 的节点</p>
     </div>
     
     <div v-if="isSorting">
@@ -142,7 +92,8 @@ const handleItemsPerPageChange = (event) => {
                 :is-selected="selectedNodeIds.has(node.id)"
                 @toggle-select="emit('toggle-select', node.id)"
                 @edit="emit('edit', node.id)" 
-                @delete="emit('delete', node.id)" />
+                @delete="emit('delete', node.id)"
+                @filter-group="emit('set-group-filter', $event)" />
             </div>
           </template>
         </draggable>
@@ -165,6 +116,7 @@ const handleItemsPerPageChange = (event) => {
                 :style="{ '--delay-index': Math.min(index, 20) }"
                 @edit="emit('edit', node.id)"
                 @delete="emit('delete', node.id)"
+                @filter-group="emit('set-group-filter', $event)"
               />
             </div>
           </template>
@@ -188,49 +140,25 @@ const handleItemsPerPageChange = (event) => {
             @toggle-select="emit('toggle-select', node.id)"
             @edit="emit('edit', node.id)" 
             @delete="emit('delete', node.id)" 
+            @filter-group="emit('set-group-filter', $event)" 
           />
         </div>
       </div>
       <div v-else class="space-y-2">
-        <div
-          v-if="shouldVirtualize"
-          ref="virtualListRef"
-          class="max-h-[60vh] overflow-y-auto pr-1"
-          @scroll="handleVirtualScroll"
-        >
-          <div :style="{ height: `${totalHeight}px`, position: 'relative' }">
-            <div class="space-y-2" :style="{ transform: `translateY(${offsetY}px)` }">
-              <ManualNodeList
-                v-for="(node, index) in visibleNodes"
-                :key="node.id"
-                :node="node"
-                :index="startIndex + index + 1"
-                class="list-item-animation"
-                :style="{ '--delay-index': Math.min(index, 20) }"
-                :is-selection-mode="isSelectionMode"
-                :is-selected="selectedNodeIds.has(node.id)"
-                @toggle-select="emit('toggle-select', node.id)"
-                @edit="emit('edit', node.id)"
-                @delete="emit('delete', node.id)"
-              />
-            </div>
-          </div>
-        </div>
-        <template v-else>
-          <ManualNodeList
-            v-for="(node, index) in paginatedNodes"
-            :key="node.id"
-            :node="node"
-            :index="paginatedNodes.indexOf(node) + 1"
-            class="list-item-animation"
-            :style="{ '--delay-index': Math.min(index, 20) }"
-            :is-selection-mode="isSelectionMode"
-            :is-selected="selectedNodeIds.has(node.id)"
-            @toggle-select="emit('toggle-select', node.id)"
-            @edit="emit('edit', node.id)"
-            @delete="emit('delete', node.id)"
-          />
-        </template>
+        <ManualNodeList
+          v-for="(node, index) in paginatedNodes"
+          :key="node.id"
+          :node="node"
+          :index="paginatedNodes.indexOf(node) + 1" 
+          class="list-item-animation"
+          :style="{ '--delay-index': Math.min(index, 20) }"
+          :is-selection-mode="isSelectionMode"
+          :is-selected="selectedNodeIds.has(node.id)"
+          @toggle-select="emit('toggle-select', node.id)"
+          @edit="emit('edit', node.id)"
+          @delete="emit('delete', node.id)"
+          @filter-group="emit('set-group-filter', $event)"
+        />
       </div>
     </div>
     
@@ -247,7 +175,6 @@ const handleItemsPerPageChange = (event) => {
             :value="itemsPerPage" 
             @change="handleItemsPerPageChange" 
             class="form-select text-xs py-1 pl-2 pr-6 border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-900 dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500"
-            aria-label="每页数量"
           >
             <option :value="24">24</option>
             <option :value="48">48</option>
@@ -260,22 +187,18 @@ const handleItemsPerPageChange = (event) => {
       <!-- Center: Pagination Controls -->
       <div class="flex items-center space-x-2" v-if="displayTotalPages > 1">
         <button 
-          type="button"
           @click="handleChangePage(1)" 
           :disabled="displayPage === 1"
           class="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 disabled:hover:bg-transparent transition-colors text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
           title="第一页"
-          aria-label="第一页"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" /></svg>
         </button>
         <button 
-          type="button"
           @click="handleChangePage(displayPage - 1)" 
           :disabled="displayPage === 1"
           class="px-2 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 disabled:hover:bg-transparent transition-colors text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
           title="上一页"
-          aria-label="上一页"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
         </button>
@@ -287,28 +210,23 @@ const handleItemsPerPageChange = (event) => {
             @keydown.enter="jumpToPage"
             @blur="jumpToPage"
             class="w-12 text-center text-sm py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 appearance-none remove-arrow"
-            aria-label="跳转页码"
           />
           <span class="text-sm text-gray-500">/ {{ displayTotalPages }}</span>
         </div>
 
         <button 
-          type="button"
           @click="handleChangePage(displayPage + 1)" 
           :disabled="displayPage === displayTotalPages"
           class="px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 disabled:hover:bg-transparent transition-colors text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
           title="下一页"
-          aria-label="下一页"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
         </button>
         <button 
-          type="button"
           @click="handleChangePage(displayTotalPages)" 
           :disabled="displayPage === displayTotalPages"
           class="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 disabled:hover:bg-transparent transition-colors text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
           title="最后一页"
-          aria-label="最后一页"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" /></svg>
         </button>
@@ -336,5 +254,6 @@ const handleItemsPerPageChange = (event) => {
 }
 .remove-arrow {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 </style>

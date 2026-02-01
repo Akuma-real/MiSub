@@ -22,11 +22,9 @@ const variableTags = ['{emoji}', '{region}', '{protocol}', '{index}', '{name}', 
     <button
       v-for="tag in variableTags"
       :key="tag"
-      type="button"
       @click="insertTemplateTag(tag)"
       :title="tag === '{name}' ? '这是第1步清理后的剩余名称' : ''"
       class="px-2 py-1 sm:px-2 sm:py-1 text-[12px] sm:text-xs bg-white dark:bg-gray-700 border border-indigo-200 dark:border-gray-600 rounded-md text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-gray-600 transition-colors !min-h-0 !min-w-0"
-      :aria-label="`插入变量 ${tag}`"
     >
       + {{ tag }}
     </button>
@@ -40,13 +38,13 @@ const variableTags = ['{emoji}', '{region}', '{protocol}', '{index}', '{name}', 
 
     <!-- 地区修饰 -->
     <div class="flex gap-1">
-      <button type="button" @click="insertTemplateTag('{region:UPPER}')"
+      <button @click="insertTemplateTag('{region:UPPER}')"
         class="px-2 py-1 sm:px-2 sm:py-1 text-[12px] sm:text-xs bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 !min-h-0 !min-w-0"
         title="大写地区 (US)">US</button>
-      <button type="button" @click="insertTemplateTag('{region:lower}')"
+      <button @click="insertTemplateTag('{region:lower}')"
         class="px-2 py-1 sm:px-2 sm:py-1 text-[12px] sm:text-xs bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 !min-h-0 !min-w-0"
         title="小写地区 (us)">us</button>
-      <button type="button" @click="insertTemplateTag('{region:zh}')"
+      <button @click="insertTemplateTag('{region:zh}')"
         class="px-2 py-1 sm:px-2 sm:py-1 text-[12px] sm:text-xs bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 text-indigo-600 dark:text-indigo-400 font-medium !min-h-0 !min-w-0"
         title="中文地区 (美国)">中</button>
     </div>
@@ -55,10 +53,10 @@ const variableTags = ['{emoji}', '{region}', '{protocol}', '{index}', '{name}', 
 
     <!-- 协议修饰 -->
     <div class="flex gap-1">
-      <button type="button" @click="insertTemplateTag('{protocol:UPPER}')"
+      <button @click="insertTemplateTag('{protocol:UPPER}')"
         class="px-2 py-1 sm:px-2 sm:py-1 text-[12px] sm:text-xs bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 !min-h-0 !min-w-0"
         title="大写协议 (VMESS)">PRO</button>
-      <button type="button" @click="insertTemplateTag('{protocol:Title}')"
+      <button @click="insertTemplateTag('{protocol:Title}')"
         class="px-2 py-1 sm:px-2 sm:py-1 text-[12px] sm:text-xs bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 !min-h-0 !min-w-0"
         title="首字母大写 (Vmess)">Pro</button>
     </div>
@@ -67,11 +65,11 @@ const variableTags = ['{emoji}', '{region}', '{protocol}', '{index}', '{name}', 
 
     <!-- 分隔符 -->
     <div class="flex gap-1">
-      <button type="button" @click="insertTemplateTag(' - ')"
+      <button @click="insertTemplateTag(' - ')"
         class="px-2 py-1 sm:px-2 sm:py-1 text-[12px] sm:text-xs bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 !min-h-0 !min-w-0">-</button>
-      <button type="button" @click="insertTemplateTag(' | ')"
+      <button @click="insertTemplateTag(' | ')"
         class="px-2 py-1 sm:px-2 sm:py-1 text-[12px] sm:text-xs bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 !min-h-0 !min-w-0">|</button>
-      <button type="button" @click="insertTemplateTag(' ')"
+      <button @click="insertTemplateTag(' ')"
         class="px-2 py-1 sm:px-2 sm:py-1 text-[12px] sm:text-xs bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 !min-h-0 !min-w-0"
         title="空格">␣</button>
     </div>
@@ -80,7 +78,6 @@ const variableTags = ['{emoji}', '{region}', '{protocol}', '{index}', '{name}', 
   <div class="relative">
     <input
       v-model="templateConfig.template"
-      aria-label="模板内容"
       class="block w-full text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-3 pr-10 focus:ring-indigo-500 focus:border-indigo-500 dark:text-white"
       placeholder="点击上方标签构建模板..."
     >
@@ -93,7 +90,6 @@ const variableTags = ['{emoji}', '{region}', '{protocol}', '{index}', '{name}', 
       <input
         type="number"
         v-model.number="templateConfig.indexStart"
-        aria-label="序号起始"
         class="w-16 text-xs bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-2 py-1 dark:text-white"
       >
     </div>
@@ -102,7 +98,6 @@ const variableTags = ['{emoji}', '{region}', '{protocol}', '{index}', '{name}', 
       <input
         type="number"
         v-model.number="templateConfig.indexPad"
-        aria-label="序号补零"
         class="w-16 text-xs bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-2 py-1 dark:text-white"
         title="例如设为2，则1显示为01"
       >

@@ -230,6 +230,15 @@ function getNodeName(url, protocol) {
         }
     }
 
+    const nameMatch = String(url || '').match(/[?&](name|tag)=([^&#]+)/i);
+    if (nameMatch && nameMatch[2]) {
+        try {
+            return decodeURIComponent(nameMatch[2]).trim();
+        } catch {
+            return nameMatch[2].trim();
+        }
+    }
+
     if (proto === 'vmess') {
         try {
             const payload = getSchemePayload(url, 8);
@@ -486,13 +495,37 @@ function makeComparator(sortCfg) {
         return map;
     });
 
-    const cmpStr = (a, b) => String(a || '').localeCompare(String(b || ''));
+    const cmpStr = (a, b) => String(a || '').localeCompare(String(b || ''), undefined, { numeric: true, sensitivity: 'base' });
     const cmpNum = (a, b) => {
         const an = Number(a), bn = Number(b);
         if (Number.isNaN(an) && Number.isNaN(bn)) return 0;
         if (Number.isNaN(an)) return 1;
         if (Number.isNaN(bn)) return -1;
         return an - bn;
+    };
+
+    /**
+     * IP 地址比较器
+     * 支持 IPv4 用于数字排序，其他作为字符串排序
+     */
+    const cmpIp = (a, b) => {
+        const ip4Regex = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
+        const ma = String(a).match(ip4Regex);
+        const mb = String(b).match(ip4Regex);
+
+        if (ma && mb) {
+            for (let i = 1; i <= 4; i++) {
+                const diff = parseInt(ma[i]) - parseInt(mb[i]);
+                if (diff !== 0) return diff;
+            }
+            return 0;
+        }
+        // 如果其中一个是 IPv4，让 IPv4 排在前面 (可选优化)
+        if (ma) return -1;
+        if (mb) return 1;
+
+        // 否则按字符串排序
+        return cmpStr(a, b);
     };
 
     return (ra, rb) => {
@@ -511,8 +544,27 @@ function makeComparator(sortCfg) {
                 if (r !== 0) return r * order;
                 continue;
             }
+            if (key === 'region') {
+                va = ra.regionZh || ra.region;
+                vb = rb.regionZh || rb.region;
+                if (orderMap) {
+                    const ia = orderMap.get(String(va || ''));
+                    const ib = orderMap.get(String(vb || ''));
+                    const raIdx = ia === undefined ? Number.MAX_SAFE_INTEGER : ia;
+                    const rbIdx = ib === undefined ? Number.MAX_SAFE_INTEGER : ib;
+                    if (raIdx !== rbIdx) return (raIdx - rbIdx) * order;
+                }
+                const r = cmpStr(va, vb);
+                if (r !== 0) return r * order;
+                continue;
+            }
             if (key === 'port') {
                 const r = cmpNum(ra.port, rb.port);
+                if (r !== 0) return r * order;
+                continue;
+            }
+            if (key === 'server') {
+                const r = cmpIp(ra.server, rb.server);
                 if (r !== 0) return r * order;
                 continue;
             }
@@ -605,7 +657,10 @@ export function applyNodeTransformPipeline(nodeUrls, transformConfig = {}) {
     // 注意：extractNodeRegion 返回中文地区名，我们需要同时保存中文名和代码
     if (needRegionEmoji) {
         records = records.map(r => {
-            const regionZh = extractNodeRegion(r.name);           // 中文地区名，如 '美国'
+            let regionZh = extractNodeRegion(r.name);           // 中文地区名，如 '美国'
+            if (regionZh === '其他' && r.server) {
+                regionZh = extractNodeRegion(r.server);
+            }
             const regionCode = toRegionCode(regionZh);             // 地区代码，如 'US'
             const emoji = cfg.enableEmoji ? getRegionEmoji(regionZh) : '';  // emoji 需要用中文名查找
             return { ...r, region: regionCode, regionZh, emoji };
@@ -614,6 +669,7 @@ export function applyNodeTransformPipeline(nodeUrls, transformConfig = {}) {
 
     // Stage 3: 模板重命名
     if (cfg.rename.template.enabled) {
+        const templateHasEmoji = cfg.rename.template.template.includes('{emoji}');
         const groupBuckets = new Map();
         for (const r of records) {
             const gk = getIndexGroupKey(r, cfg.rename.template.indexScope);
@@ -622,26 +678,9 @@ export function applyNodeTransformPipeline(nodeUrls, transformConfig = {}) {
             groupBuckets.set(gk, arr);
         }
 
-        // 稳定排序：server 字符串比较，port 数值比较
-        const cmpStr = (a, b) => String(a || '').localeCompare(String(b || ''));
-        const cmpPort = (a, b) => {
-            const an = Number(a), bn = Number(b);
-            if (Number.isNaN(an) && Number.isNaN(bn)) return 0;
-            if (Number.isNaN(an)) return 1;
-            if (Number.isNaN(bn)) return -1;
-            return an - bn;
-        };
-        for (const arr of groupBuckets.values()) {
-            arr.sort((a, b) => {
-                const r1 = cmpStr(String(a.server || '').toLowerCase(), String(b.server || '').toLowerCase());
-                if (r1 !== 0) return r1;
-                const r2 = cmpPort(a.port, b.port);
-                if (r2 !== 0) return r2;
-                const r3 = cmpStr(a.protocol, b.protocol);
-                if (r3 !== 0) return r3;
-                return cmpStr(a.name, b.name);
-            });
-        }
+        // [Modified] Remove forced sorting to preserve original node order
+        // Users can enable explicit sorting if they want deterministic ordering
+        // arr.sort((a, b) => { ... });
 
         const nextIndex = new Map();
         for (const [gk, arr] of groupBuckets.entries()) {
@@ -657,7 +696,7 @@ export function applyNodeTransformPipeline(nodeUrls, transformConfig = {}) {
                     region: regionText,
                     protocol: protocolText,
                     index: padIndex(currentIndex, cfg.rename.template.indexPad),
-                    name: r.name,
+                    name: templateHasEmoji ? stripLeadingEmoji(r.name) : r.name,
                     server: r.server,
                     port: r.port
                 };

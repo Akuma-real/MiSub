@@ -20,20 +20,9 @@ export function fixNodeUrlEncoding(nodeUrl) {
         }
     };
 
-    const decodeRepeated = (value) => {
-        let decoded = safeDecode(value);
-        if (decoded.includes('%')) {
-            const decodedTwice = safeDecode(decoded);
-            if (decodedTwice !== decoded) {
-                decoded = decodedTwice;
-            }
-        }
-        return decoded;
-    };
-
     // 辅助函数：判断是否需要保持原样（即解码后出现乱码）
     const shouldKeepRaw = (decoded) => {
-        return decoded.includes('�');
+        return decoded.includes('');
     };
 
     let fixedUrl = nodeUrl;
@@ -53,7 +42,7 @@ export function fixNodeUrlEncoding(nodeUrl) {
             // 修复 hash (节点名称)
             if (urlObj.hash) {
                 const rawHash = urlObj.hash.substring(1);
-                const decodedHash = decodeRepeated(rawHash);
+                const decodedHash = safeDecode(rawHash);
                 if (!shouldKeepRaw(decodedHash)) {
                     urlObj.hash = '#' + encodeURIComponent(decodedHash);
                 }
@@ -79,29 +68,13 @@ export function fixSSEncoding(nodeUrl) {
     if (!nodeUrl.startsWith('ss://')) return nodeUrl;
 
     try {
-        const hashIndex = nodeUrl.indexOf('#');
-        const baseUrl = hashIndex === -1 ? nodeUrl : nodeUrl.substring(0, hashIndex);
-        const hashPart = hashIndex === -1 ? '' : nodeUrl.substring(hashIndex + 1);
-
-        let fixedBase = baseUrl;
-        const prefix = 'ss://';
-        if (baseUrl.startsWith(prefix)) {
-            const afterScheme = baseUrl.substring(prefix.length);
-            const atIndex = afterScheme.indexOf('@');
-            if (atIndex !== -1) {
-                const base64Part = afterScheme.substring(0, atIndex);
-                const rest = afterScheme.substring(atIndex);
-                const decodedBase64 = base64Part.includes('%') ? decodeURIComponent(base64Part) : base64Part;
-                fixedBase = `${prefix}${decodedBase64}${rest}`;
-            }
+        const urlObj = new URL(nodeUrl);
+        if (urlObj.hash) {
+            try {
+                urlObj.hash = '#' + encodeURIComponent(decodeURIComponent(urlObj.hash.substring(1)));
+            } catch (e) { }
         }
-
-        if (!hashPart) {
-            return fixedBase;
-        }
-
-        const decodedName = decodeURIComponent(hashPart);
-        return `${fixedBase}#${encodeURIComponent(decodedName)}`;
+        return urlObj.toString();
     } catch (e) {
         const parts = nodeUrl.split('#');
         if (parts.length > 1) {

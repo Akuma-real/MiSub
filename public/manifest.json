@@ -2,16 +2,17 @@
   "name": "MiSub - 订阅转换器",
   "short_name": "MiSub",
   "description": "基于 Cloudflare 的订阅转换和管理工具",
-  "start_url": "/?source=pwa",
+  "start_url": "/",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui", "browser"],
   "background_color": "#0f172a",
   "theme_color": "#4f46e5",
   "orientation": "portrait-primary",
   "scope": "/",
-  "id": "/?source=pwa",
   "lang": "zh-CN",
-  "categories": ["productivity", "utilities"],
+  "categories": [
+    "productivity",
+    "utilities"
+  ],
   "icons": [
     {
       "src": "/icons/icon-72x72.png",
@@ -78,6 +79,12 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    },
+    {
+      "src": "/logo.svg",
+      "sizes": "128x128 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ],
   "shortcuts": [

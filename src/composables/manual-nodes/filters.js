@@ -6,7 +6,6 @@ export const countryCodeMap = {
   'us': ['🇺🇸', '美国', '美國'],
   'kr': ['🇰🇷', '韩国', '韓國'],
   'gb': ['🇬🇧', '英国', '英國'],
-  'uk': ['🇬🇧', '英国', '英國'],
   'de': ['🇩🇪', '德国', '德國'],
   'fr': ['🇫🇷', '法国', '法國'],
   'ca': ['🇨🇦', '加拿大'],
@@ -73,7 +72,11 @@ export function filterManualNodes(nodes, searchTerm, activeColorFilter) {
   let filtered = nodes;
 
   if (activeColorFilter) {
-    filtered = filtered.filter(n => n.colorTag === activeColorFilter);
+    if (activeColorFilter === '默认') {
+      filtered = filtered.filter(n => !n.group);
+    } else {
+      filtered = filtered.filter(n => n.group === activeColorFilter);
+    }
   }
 
   if (!searchTerm) {

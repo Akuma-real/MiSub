@@ -38,8 +38,8 @@ const searchModel = computed({
     <div class="flex justify-between items-center mb-2">
       <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">选择机场订阅</h4>
       <div class="space-x-2">
-        <button type="button" @click="emit('select-all')" class="text-xs text-indigo-600 hover:underline" aria-label="全选订阅">全选</button>
-        <button type="button" @click="emit('deselect-all')" class="text-xs text-indigo-600 hover:underline" aria-label="取消全选订阅">全不选</button>
+        <button @click="emit('select-all')" class="text-xs text-indigo-600 hover:underline">全选</button>
+        <button @click="emit('deselect-all')" class="text-xs text-indigo-600 hover:underline">全不选</button>
       </div>
     </div>
     <div class="relative mb-2">
@@ -47,7 +47,6 @@ const searchModel = computed({
         type="text"
         v-model="searchModel"
         placeholder="搜索订阅..."
-        aria-label="搜索订阅"
         class="w-full pl-9 pr-3 py-1.5 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-xs focus:outline-hidden focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
       />
       <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>

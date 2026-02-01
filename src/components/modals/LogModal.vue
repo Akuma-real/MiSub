@@ -112,19 +112,13 @@ watch(() => props.show, (newVal) => {
                 <span class="text-lg font-bold text-gray-900 dark:text-white">订阅访问日志</span>
                  <div class="flex gap-2">
                     <button 
-                    type="button"
                     @click="fetchLogs" 
-                    class="text-xs px-2 py-1 rounded-md bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-gray-600 dark:text-gray-300"
-                    aria-label="刷新日志"
-                    >
+                    class="text-xs px-2 py-1 rounded-md bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-gray-600 dark:text-gray-300">
                         刷新
                     </button>
                     <button 
-                    type="button"
                     @click="clearLogs" 
-                    class="text-xs px-2 py-1 rounded-md bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors text-red-600 dark:text-red-400"
-                    aria-label="清空日志"
-                    >
+                    class="text-xs px-2 py-1 rounded-md bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors text-red-600 dark:text-red-400">
                         清空
                     </button>
                 </div>
@@ -228,20 +222,16 @@ watch(() => props.show, (newVal) => {
                     </span>
                     <div class="flex gap-2">
                         <button 
-                            type="button"
                             @click="prevPage" 
                             :disabled="currentPage === 1"
                             class="px-3 py-1 text-sm border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                            aria-label="上一页"
                         >
                             上一页
                         </button>
                         <button 
-                            type="button"
                             @click="nextPage" 
                             :disabled="currentPage === totalPages"
                             class="px-3 py-1 text-sm border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                            aria-label="下一页"
                         >
                             下一页
                         </button>

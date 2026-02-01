@@ -11,10 +11,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       workbox: {
-        skipWaiting: true,
-        clientsClaim: true,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-        cleanupOutdatedCaches: true,
         // 使用离线回退页面，并显式忽略订阅路径
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [
@@ -23,21 +20,6 @@ export default defineConfig({
           /^\/[^/]+\/[^/]+(\?.*)?$/ // Two-segment paths like /test1/work, optionally with query params
         ],
         runtimeCaching: [
-          {
-            urlPattern: ({ request }) => request.mode === 'navigate',
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'page-cache',
-              networkTimeoutSeconds: 5,
-              cacheableResponse: {
-                statuses: [0, 200]
-              },
-              expiration: {
-                maxEntries: 30,
-                maxAgeSeconds: 24 * 60 * 60
-              }
-            }
-          },
           {
             urlPattern: /^\/cdn-cgi\/.*/,
             handler: 'NetworkOnly',

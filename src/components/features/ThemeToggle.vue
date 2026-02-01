@@ -9,10 +9,9 @@ const { toggleTheme } = store;
 
 <template>
   <button
-    type="button"
     @click="toggleTheme"
-    class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900"
-    aria-label="切换主题"
+    class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+    aria-label="Toggle theme"
   >
     <div v-if="theme === 'dark'" key="dark-icon" class="transition-opacity duration-300">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

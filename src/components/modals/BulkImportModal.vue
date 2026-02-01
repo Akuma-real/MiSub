@@ -1,6 +1,11 @@
 <script setup>
 import { ref } from 'vue';
 import Modal from '../forms/Modal.vue';
+import GroupSelector from '../ui/GroupSelector.vue'; // Added
+import { useManualNodes } from '../../composables/useManualNodes.js';
+import { useDataStore } from '../../stores/useDataStore.js';
+
+const { manualNodeGroups } = useManualNodes(useDataStore().markDirty);
 
 const props = defineProps({
   show: Boolean,
@@ -9,22 +14,14 @@ const props = defineProps({
 const emit = defineEmits(['update:show', 'import']);
 
 const importText = ref('');
-const selectedColorTag = ref(null);
+const selectedGroup = ref('');
 const urlFocused = ref(false);
 
 const handleConfirm = () => {
-    emit('import', importText.value, selectedColorTag.value);
+    emit('import', importText.value, selectedGroup.value); // group passed as second arg
     emit('update:show', false);
     importText.value = '';
-    selectedColorTag.value = null;
-};
-
-// Color mapping for UI display
-const colorMap = {
-  red: 'bg-red-500',
-  orange: 'bg-orange-500',
-  green: 'bg-green-500',
-  blue: 'bg-blue-500'
+    selectedGroup.value = '';
 };
 </script>
 
@@ -49,48 +46,19 @@ const colorMap = {
            每行一个订阅链接或分享节点。将自动识别节点名称。
         </p>
       
-        <!-- Color Tag Selector -->
+        <!-- Group Selector -->
         <div class="relative">
-            <div 
-              class="relative border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-black/20 rounded-xl px-3 py-2 hover:border-indigo-500/50 dark:hover:border-indigo-500/50 transition-colors h-[50px] flex items-center"
-            >
-              <div class="flex items-center justify-between w-full">
-                <div class="flex items-center gap-2">
-                  <span class="text-xs text-gray-500 dark:text-gray-400 mr-2 font-medium">自动标记颜色</span>
-                  <button
-                    v-for="color in ['red', 'orange', 'green', 'blue']"
-                    :key="color"
-                    type="button"
-                    @click="selectedColorTag = selectedColorTag === color ? null : color"
-                    class="w-6 h-6 rounded-full border-2 transition-all flex items-center justify-center hover:scale-110"
-                    :class="[
-                      selectedColorTag === color 
-                        ? 'border-white dark:border-gray-800 ring-2 ring-offset-1 ring-offset-white dark:ring-offset-gray-900 scale-110' 
-                        : 'border-transparent',
-                      colorMap[color],
-                      selectedColorTag === color ? `ring-${color}-500` : ''
-                    ]"
-                    :aria-label="`选择颜色 ${color}`"
-                    :aria-pressed="selectedColorTag === color"
-                  >
-                    <svg v-if="selectedColorTag === color" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white drop-shadow" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                    </svg>
-                  </button>
-                </div>
-                <button
-                  v-if="selectedColorTag"
-                  type="button"
-                  @click="selectedColorTag = null"
-                  class="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-                  aria-label="清除颜色标记"
-                >
-                  清除
-                </button>
-                <span v-else class="text-xs text-gray-400">无</span>
-              </div>
-            </div>
+          <div class="flex flex-col">
+            <label for="import-group" class="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5 ml-1">
+              自动分配分组 (可选)
+            </label>
+            <GroupSelector
+              v-model="selectedGroup"
+              :groups="manualNodeGroups"
+              placeholder="选择或输入分组..."
+            />
           </div>
+        </div>
 
         <div class="relative group">
           <div 
@@ -112,7 +80,6 @@ const colorMap = {
                 rows="8"
                 @focus="urlFocused = true"
                 @blur="urlFocused = false"
-                aria-label="批量导入内容"
                 class="flex-1 w-full bg-transparent border-0 focus:ring-0 dark:text-white placeholder-gray-400 text-sm font-mono resize-none py-3 px-3 min-h-[160px]"
                 placeholder="http://...&#10;https://...&#10;vmess://...&#10;vless://...&#10;trojan://..."
               ></textarea>

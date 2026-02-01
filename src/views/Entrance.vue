@@ -1,17 +1,16 @@
 <template>
   <div class="entrance-container">
-     <LoadingSpinner v-if="isLoading" type="spinner" size="md" color="indigo" message="正在加载..." />
-     <LoadingSpinner v-else-if="!activeComponent" type="spinner" size="md" color="indigo" message="正在准备页面..." />
-     <component v-else :is="activeComponent" v-bind="componentProps" />
+     <!-- If access is allowed (Login), the component renders differently via the component map or state -->
+     <!-- Actually, we redirect or render component based on check -->
+     <component :is="activeComponent" v-bind="componentProps" />
   </div>
 </template>
 
 <script setup>
-import { computed, defineAsyncComponent, ref, watch } from 'vue';
+import { ref, computed, onMounted, defineAsyncComponent, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { storeToRefs } from 'pinia';
 import { useSessionStore } from '../stores/session';
-import LoadingSpinner from '../components/ui/LoadingSpinner.vue';
+import { storeToRefs } from 'pinia';
 
 // Lazy load components
 const Login = defineAsyncComponent(() => import('../components/modals/Login.vue'));
@@ -20,30 +19,27 @@ const NotFound = defineAsyncComponent(() => import('./NotFound.vue'));
 const route = useRoute();
 const router = useRouter();
 const sessionStore = useSessionStore();
-const { publicConfig, isConfigReady, sessionState } = storeToRefs(sessionStore);
+const { publicConfig, initialData } = storeToRefs(sessionStore); // Ensure publicConfig contains settings or we need to access settings differently
 
 const activeComponent = ref(null);
 const componentProps = ref({});
-const isLoading = computed(() => !isConfigReady.value || sessionState.value === 'loading' || sessionState.value === 'loggedIn');
 
-watch([() => route.path, publicConfig, isConfigReady], () => {
-    if (isConfigReady.value) {
-        checkPath();
-    }
-}, { immediate: true });
+onMounted(async () => {
+    // Determine what to show
+    checkPath();
+});
 
-watch(sessionState, (state) => {
-    if (state === 'loggedIn' && route.path !== '/') {
-        router.replace('/');
-    }
-}, { immediate: true });
+// Watch for path changes if component is reused
+watch(() => route.path, () => {
+    checkPath();
+});
+
+// Watch for config loaded
+watch(publicConfig, () => {
+    checkPath();
+});
 
 async function checkPath() {
-    if (sessionState.value === 'loggedIn') {
-        activeComponent.value = null;
-        componentProps.value = {};
-        return;
-    }
     // 1. Get Configured Path
     // Settings might be in initialData (if logged in) or publicConfig (if not)
     // Actually, 'customLoginPath' might be considered a 'secret' setting? 
@@ -92,7 +88,6 @@ async function checkPath() {
     } else {
         // Not a login path, and fell through to catch-all
         activeComponent.value = NotFound;
-        componentProps.value = {};
     }
 }
 

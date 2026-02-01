@@ -226,7 +226,6 @@ const handlePageChange = (page) => {
                   :checked="selectedKeys.length === paginatedData.length && paginatedData.length > 0"
                   :indeterminate="selectedKeys.length > 0 && selectedKeys.length < paginatedData.length"
                   class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                  aria-label="全选"
                   @change="toggleAllSelection"
                 />
               </th>
@@ -248,10 +247,8 @@ const handlePageChange = (page) => {
                   <!-- 排序图标 -->
                   <button
                     v-if="column.sortable"
-                    type="button"
                     class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                     @click="handleSort(column)"
-                    :aria-label="`按 ${column.title} 排序`"
                   >
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M5 12l5-5 5 5H5z" />
@@ -302,7 +299,6 @@ const handlePageChange = (page) => {
                   type="checkbox"
                   :checked="isRowSelected(row)"
                   class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                  aria-label="选择行"
                   @click.stop
                   @change="toggleRowSelection(row)"
                 />
@@ -348,8 +344,6 @@ const handlePageChange = (page) => {
             :disabled="currentPage <= 1"
             class="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-l-md bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
             @click="handlePageChange(currentPage - 1)"
-            type="button"
-            aria-label="上一页"
           >
             上一页
           </button>
@@ -357,15 +351,13 @@ const handlePageChange = (page) => {
           <button
             v-for="page in Math.min(totalPages, 5)"
             :key="page"
-            type="button"
             :class="[
               'px-3 py-2 text-sm border border-gray-300 dark:border-gray-600',
               currentPage === page
                 ? 'bg-indigo-50 border-indigo-500 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-300'
-              : 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700'
+                : 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700'
             ]"
             @click="handlePageChange(page)"
-            :aria-current="currentPage === page ? 'page' : undefined"
           >
             {{ page }}
           </button>
@@ -374,8 +366,6 @@ const handlePageChange = (page) => {
             :disabled="currentPage >= totalPages"
             class="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-r-md bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
             @click="handlePageChange(currentPage + 1)"
-            type="button"
-            aria-label="下一页"
           >
             下一页
           </button>

@@ -56,7 +56,6 @@ const handleClick = (event) => {
 
 <template>
   <button
-    type="button"
     @click="handleClick"
     :disabled="disabled || loading"
     class="relative inline-flex items-center justify-center gap-2 font-semibold smooth-all rounded-xl tap-effect disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden group tracking-wide transition-all duration-300"

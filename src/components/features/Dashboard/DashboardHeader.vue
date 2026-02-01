@@ -19,15 +19,11 @@ defineEmits(['openLog', 'openBulkImport']);
       </span>
     </div>
     <div class="flex items-center gap-3 w-full md:w-auto">
-      <button
-        type="button"
-        @click="$emit('openLog')"
+      <button @click="$emit('openLog')"
         class="flex-1 md:flex-none px-5 py-2.5 rounded-xl text-sm font-semibold text-gray-600 dark:text-gray-300 bg-white/80 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 border border-gray-200 dark:border-white/10 transition-all shadow-sm hover:shadow-md">
         订阅日志
       </button>
-      <button
-        type="button"
-        @click="$emit('openBulkImport')"
+      <button @click="$emit('openBulkImport')"
         class="flex-1 md:flex-none px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-primary-600 hover:bg-primary-500 shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 transition-all transform hover:-translate-y-0.5">
         批量导入
       </button>
