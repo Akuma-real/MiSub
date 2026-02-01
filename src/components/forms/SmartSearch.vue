@@ -120,7 +120,6 @@ watch([searchResults, searchQuery], () => {
         v-model="searchQuery"
         type="text"
         :placeholder="placeholder"
-        :aria-label="placeholder"
         class="w-full pl-10 pr-12 py-3 bg-white/90 dark:bg-gray-900/80 backdrop-blur-md border border-gray-200 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent smooth-all text-gray-900 dark:text-gray-100"
         @keyup.enter="addToHistory(searchQuery)"
       >
@@ -128,10 +127,8 @@ watch([searchResults, searchQuery], () => {
       <!-- 清除按钮 -->
       <button
         v-if="searchQuery || activeFilters.size > 0"
-        type="button"
         @click="clearSearch"
         class="absolute inset-y-0 right-0 pr-3 flex items-center"
-        aria-label="清除搜索"
       >
         <svg class="h-5 w-5 text-gray-400 hover:text-gray-600 smooth-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -144,14 +141,12 @@ watch([searchResults, searchQuery], () => {
       <button
         v-for="filter in filters"
         :key="filter.key"
-        type="button"
         @click="toggleFilter(filter.key)"
         class="px-3 py-1.5 text-sm font-medium rounded-full smooth-all"
         :class="activeFilters.has(filter.key)
           ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300'
           : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
         "
-        :aria-pressed="activeFilters.has(filter.key)"
       >
         {{ filter.label }}
         <span v-if="filter.count !== undefined" class="ml-1 opacity-60">
@@ -167,10 +162,8 @@ watch([searchResults, searchQuery], () => {
         <button
           v-for="suggestion in suggestions"
           :key="suggestion"
-          type="button"
           @click="selectSuggestion(suggestion)"
           class="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg smooth-all"
-          :aria-label="`使用建议 ${suggestion}`"
         >
           {{ suggestion }}
         </button>
@@ -190,10 +183,8 @@ watch([searchResults, searchQuery], () => {
         <button
           v-for="history in searchHistory.slice(0, 3)"
           :key="history"
-          type="button"
           @click="searchQuery = history"
           class="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 smooth-all"
-          :aria-label="`使用历史 ${history}`"
         >
           {{ history }}
         </button>

@@ -150,7 +150,7 @@ onMounted(() => {
     <div class="space-y-6">
         <!-- 头部说明 -->
         <div
-            class="bg-white dark:bg-gray-800 rounded-3xl p-6 space-y-4 border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
+            class="bg-white/90 dark:bg-gray-900/70 rounded-3xl p-6 space-y-5 border border-gray-100/80 dark:border-white/10 shadow-sm overflow-hidden">
             <h3 class="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
@@ -190,19 +190,15 @@ onMounted(() => {
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <select v-model="filterStatus" aria-label="筛选留言状态"
+                    <select v-model="filterStatus"
                         class="block w-full sm:w-auto pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md bg-white dark:bg-gray-700 dark:text-white">
                         <option value="all">全部状态</option>
                         <option value="pending">待审核</option>
                         <option value="approved">已通过</option>
                         <option value="replied">已回复</option>
                     </select>
-                    <button
-                        type="button"
-                        @click="fetchMessages"
-                        class="p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
-                        aria-label="刷新留言"
-                    >
+                    <button @click="fetchMessages"
+                        class="p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 4v5h.058M20.9 14.25A10.053 10.053 0 0021.1 12c0-5.523-4.477-10-10-10S1.1 6.477 1.1 12c0 4.456 2.934 8.216 7 9.542V21h3" />
@@ -250,28 +246,20 @@ onMounted(() => {
 
                     <!-- Reply Input -->
                     <div v-if="replyingId === msg.id" class="mb-4 ml-4">
-                        <textarea v-model="replyContent" rows="3" aria-label="回复内容"
+                        <textarea v-model="replyContent" rows="3"
                             class="block w-full rounded-xl border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-white dark:bg-gray-700 dark:text-white sm:text-sm"
                             placeholder="请输入回复内容..."></textarea>
                         <div class="mt-2 flex justify-end gap-2">
-                            <button
-                                type="button"
-                                @click="cancelReply"
-                                class="px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
-                                aria-label="取消回复"
-                            >取消</button>
-                            <button
-                                type="button"
-                                @click="submitReply(msg.id)"
-                                class="px-3 py-1.5 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded shadow-sm"
-                                aria-label="发送回复"
-                            >发送回复</button>
+                            <button @click="cancelReply"
+                                class="px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg">取消</button>
+                            <button @click="submitReply(msg.id)"
+                                class="px-3 py-1.5 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded shadow-sm">发送回复</button>
                         </div>
                     </div>
 
                     <!-- Actions -->
                     <div class="flex items-center gap-4 text-sm">
-                        <button v-if="!msg.isVisible" type="button" @click="handleAction('toggle', msg.id)"
+                        <button v-if="!msg.isVisible" @click="handleAction('toggle', msg.id)"
                             class="text-green-600 hover:text-green-700 font-medium flex items-center gap-1">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -281,7 +269,7 @@ onMounted(() => {
                             </svg>
                             通过审核/显示
                         </button>
-                        <button v-else type="button" @click="handleAction('toggle', msg.id)"
+                        <button v-else @click="handleAction('toggle', msg.id)"
                             class="text-orange-600 hover:text-orange-700 font-medium flex items-center gap-1">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -290,7 +278,7 @@ onMounted(() => {
                             隐藏
                         </button>
 
-                        <button type="button" @click="startReply(msg)"
+                        <button @click="startReply(msg)"
                             class="text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-1">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -299,7 +287,7 @@ onMounted(() => {
                             回复
                         </button>
 
-                        <button type="button" @click="handleAction('delete', msg.id)"
+                        <button @click="handleAction('delete', msg.id)"
                             class="text-red-600 hover:text-red-700 font-medium flex items-center gap-1 ml-auto">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

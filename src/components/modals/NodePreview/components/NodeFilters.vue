@@ -83,7 +83,6 @@ const isProcessedToggleVisible = computed(() => {
             v-model="searchModel"
             type="text"
             placeholder="搜索..."
-            aria-label="搜索节点"
             class="w-full px-2 sm:px-3 py-1.5 sm:py-2 pr-8 sm:pr-10 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           />
           <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:pr-3">
@@ -96,12 +95,10 @@ const isProcessedToggleVisible = computed(() => {
         <!-- 处理模式 toggler (仅移动端、订阅组且非公开页显示) -->
         <button
           v-if="isProcessedToggleVisible"
-          type="button"
           @click="emit('update:showProcessed', !showProcessed)"
           :class="showProcessed ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400 border-gray-300 dark:border-gray-600'"
           class="lg:hidden flex-shrink-0 w-8 h-8 border rounded-lg hover:opacity-90 transition-colors flex items-center justify-center !min-h-0 !min-w-0"
           title="切换显示原始/处理后节点名称"
-          :aria-pressed="showProcessed"
         >
           <!-- 原材料 Icon -->
           <svg v-if="!showProcessed" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -124,7 +121,6 @@ const isProcessedToggleVisible = computed(() => {
         </label>
         <select
           v-model="protocolModel"
-          aria-label="协议类型"
           class="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
         >
           <option value="all">全部</option>
@@ -141,7 +137,6 @@ const isProcessedToggleVisible = computed(() => {
         </label>
         <select
           v-model="regionModel"
-          aria-label="地区筛选"
           class="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
         >
           <option value="all">全部</option>
@@ -161,26 +156,20 @@ const isProcessedToggleVisible = computed(() => {
         </label>
         <div class="flex items-center gap-1 sm:gap-2">
           <button
-            type="button"
             @click="emit('update:viewMode', 'list')"
             :class="viewMode === 'list' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'"
             class="w-9 h-9 rounded-lg text-sm font-medium transition-colors flex items-center justify-center"
             title="列表视图"
-            aria-label="列表视图"
-            :aria-pressed="viewMode === 'list'"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16"></path>
             </svg>
           </button>
           <button
-            type="button"
             @click="emit('update:viewMode', 'card')"
             :class="viewMode === 'card' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'"
             class="w-9 h-9 rounded-lg text-sm font-medium transition-colors flex items-center justify-center"
             title="卡片视图"
-            aria-label="卡片视图"
-            :aria-pressed="viewMode === 'card'"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"></path>
@@ -196,13 +185,10 @@ const isProcessedToggleVisible = computed(() => {
         </label>
         <div class="flex items-center gap-1 sm:gap-2">
           <button
-            type="button"
             @click="emit('update:showProcessed', !showProcessed)"
             :class="showProcessed ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'"
             class="w-9 h-9 rounded-lg text-sm font-medium transition-colors flex items-center justify-center"
             title="切换显示模式：原始 / 处理后"
-            aria-label="切换规则处理"
-            :aria-pressed="showProcessed"
           >
             <!-- 魔法棒 Icon (处理后) -->
             <svg v-if="showProcessed" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

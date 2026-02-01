@@ -98,26 +98,16 @@ const customKeywordModel = computed({
           {{ selectedRules.length }}
         </span>
       </div>
-    <div class="flex items-center gap-2" @click.stop>
-      <button
-        v-if="!isAdvancedMode"
-        type="button"
-        @click="switchToAdvanced"
-        class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline"
-        aria-label="切换高级模式"
-      >
-        高级模式
-      </button>
-      <button
-        v-else
-        type="button"
-        @click="switchToVisual"
-        class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline"
-        aria-label="切换可视化模式"
-      >
-        可视化模式
-      </button>
-    </div>
+      <div class="flex items-center gap-2" @click.stop>
+        <button v-if="!isAdvancedMode" @click="switchToAdvanced"
+          class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline">
+          高级模式
+        </button>
+        <button v-else @click="switchToVisual"
+          class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline">
+          可视化模式
+        </button>
+      </div>
     </div>
 
     <!-- 内容区域 -->
@@ -127,29 +117,29 @@ const customKeywordModel = computed({
         <div v-if="!isAdvancedMode" class="space-y-3">
           <!-- 模式选择 -->
           <div class="flex gap-2">
-          <button type="button" @click="ruleModeModel = 'exclude'" :class="[
-            'flex-1 sm:flex-none px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg transition-all !min-h-0 !min-w-0',
-            ruleModeModel === 'exclude'
-              ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-200'
-              : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-          ]">
-            排除模式
-          </button>
-          <button type="button" @click="ruleModeModel = 'keep'" :class="[
-            'flex-1 sm:flex-none px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg transition-all !min-h-0 !min-w-0',
-            ruleModeModel === 'keep'
-              ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200'
-              : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-          ]">
-            仅包含模式
-          </button>
+            <button @click="ruleModeModel = 'exclude'" :class="[
+              'flex-1 sm:flex-none px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg transition-all !min-h-0 !min-w-0',
+              ruleModeModel === 'exclude'
+                ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-200'
+                : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+            ]">
+              排除模式
+            </button>
+            <button @click="ruleModeModel = 'keep'" :class="[
+              'flex-1 sm:flex-none px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg transition-all !min-h-0 !min-w-0',
+              ruleModeModel === 'keep'
+                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200'
+                : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+            ]">
+              仅包含模式
+            </button>
           </div>
 
           <!-- 地区标签 -->
           <div>
             <div class="text-xs text-gray-500 dark:text-gray-400 mb-1.5">📍 地区</div>
             <div class="flex flex-wrap gap-1.5">
-              <button type="button" v-for="tag in presetRegions" :key="tag.pattern" @click="toggleTag(tag, 'region')" :class="[
+              <button v-for="tag in presetRegions" :key="tag.pattern" @click="toggleTag(tag, 'region')" :class="[
                 'px-2.5 py-1 text-xs sm:text-sm font-medium rounded-md transition-all !min-h-0 !min-w-0',
                 isSelected(tag.pattern)
                   ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-200 ring-1 ring-indigo-300 dark:ring-indigo-700'
@@ -164,7 +154,7 @@ const customKeywordModel = computed({
           <div>
             <div class="text-xs text-gray-500 dark:text-gray-400 mb-1.5">📡 协议</div>
             <div class="flex flex-wrap gap-1.5">
-              <button type="button" v-for="tag in presetProtocols" :key="tag.pattern" @click="toggleTag(tag, 'protocol')"
+              <button v-for="tag in presetProtocols" :key="tag.pattern" @click="toggleTag(tag, 'protocol')"
                 :class="[
                   'px-2.5 py-1 text-xs sm:text-sm font-medium rounded-md transition-all !min-h-0 !min-w-0',
                   isSelected(tag.pattern)
@@ -180,7 +170,7 @@ const customKeywordModel = computed({
           <div>
             <div class="text-xs text-gray-500 dark:text-gray-400 mb-1.5">🏷️ 关键词</div>
             <div class="flex flex-wrap gap-1.5">
-              <button type="button" v-for="tag in presetKeywords" :key="tag.pattern" @click="toggleTag(tag, 'keyword')" :class="[
+              <button v-for="tag in presetKeywords" :key="tag.pattern" @click="toggleTag(tag, 'keyword')" :class="[
                 'px-2.5 py-1 text-xs sm:text-sm font-medium rounded-md transition-all !min-h-0 !min-w-0',
                 isSelected(tag.pattern)
                   ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-200 ring-1 ring-indigo-300 dark:ring-indigo-700'
@@ -195,9 +185,9 @@ const customKeywordModel = computed({
           <div>
             <div class="text-xs text-gray-500 dark:text-gray-400 mb-1.5">✏️ 自定义关键字</div>
             <div class="flex flex-col sm:flex-row gap-2">
-              <input type="text" v-model="customKeywordModel" @keyup.enter="addCustomKeyword" placeholder="输入关键字，回车添加" aria-label="自定义关键字"
+              <input type="text" v-model="customKeywordModel" @keyup.enter="addCustomKeyword" placeholder="输入关键字，回车添加"
                 class="w-full sm:flex-1 min-w-0 px-3 py-1.5 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-hidden focus:ring-1 focus:ring-indigo-500 dark:text-white">
-              <button type="button" @click="addCustomKeyword"
+              <button @click="addCustomKeyword"
                 class="w-full sm:w-auto flex-shrink-0 whitespace-nowrap px-3 py-1.5 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors !min-h-0 !min-w-0">
                 添加
               </button>
@@ -221,7 +211,7 @@ const customKeywordModel = computed({
                       'bg-gray-200 text-gray-700 dark:bg-gray-600 dark:text-gray-200'
               ]">
                 {{ rule.icon || '' }}{{ rule.label }}
-                <button type="button" @click="removeRule(index)" class="hover:text-red-500 transition-colors !min-h-0 !min-w-0" aria-label="移除规则">
+                <button @click="removeRule(index)" class="hover:text-red-500 transition-colors !min-h-0 !min-w-0">
                   <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M6 18L18 6M6 6l12 12" />

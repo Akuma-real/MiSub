@@ -137,12 +137,8 @@ onMounted(() => {
                                     点击客户端图标自动打开应用并导入订阅
                                 </p>
                             </div>
-                            <button
-                                type="button"
-                                @click="emit('close')"
-                                class="w-10 h-10 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                                aria-label="关闭"
-                            >
+                            <button @click="emit('close')"
+                                class="w-10 h-10 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
                                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M6 18L18 6M6 6l12 12" />
@@ -172,11 +168,7 @@ onMounted(() => {
                         </div>
 
                         <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                            <button
-                                v-for="client in groupedClients"
-                                :key="client.id"
-                                type="button"
-                                @click="handleClientClick(client)"
+                            <button v-for="client in groupedClients" :key="client.id" @click="handleClientClick(client)"
                                 class="group relative flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all duration-200 hover:scale-105 hover:shadow-lg"
                                 :class="isRecommended(client)
                                     ? 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-300 dark:border-indigo-600 ring-2 ring-indigo-500/20'

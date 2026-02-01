@@ -89,11 +89,9 @@ const emit = defineEmits(['copy']);
                 <!-- 操作 (所有设备) -->
                 <div class="col-span-1 flex justify-center">
                   <button
-                    type="button"
                     @click="emit('copy', node, node.url)"
                     class="inline-flex items-center justify-center w-8 h-8 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-all duration-150"
                     :class="{ 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20': copiedNodeId === node.url }"
-                    aria-label="复制节点链接"
                   >
                     <svg
                       v-if="copiedNodeId !== node.url"

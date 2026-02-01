@@ -44,18 +44,14 @@ const dismissUpdate = () => {
             <!-- 操作按钮 -->
             <div class="flex gap-2">
               <button
-                type="button"
                 @click="handleUpdate"
                 class="px-3 py-1.5 bg-white/20 hover:bg-white/30 text-white text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-white/50"
-                aria-label="更新应用"
               >
                 更新
               </button>
               <button
-                type="button"
                 @click="dismissUpdate"
                 class="p-1.5 hover:bg-white/20 text-white rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-white/50"
-                aria-label="关闭更新提示"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />

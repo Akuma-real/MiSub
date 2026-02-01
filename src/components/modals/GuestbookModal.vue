@@ -117,12 +117,8 @@ const submitMessage = async () => {
             class="relative w-full max-w-lg bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col max-h-[90vh] transition-all p-6">
 
             <!-- Close Button (Absolute) -->
-            <button
-                type="button"
-                @click="emit('close')"
-                class="absolute top-4 right-4 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors z-10"
-                aria-label="关闭"
-            >
+            <button @click="emit('close')"
+                class="absolute top-4 right-4 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors z-10">
                 <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -141,12 +137,8 @@ const submitMessage = async () => {
                 <p class="text-gray-500 dark:text-gray-400 max-w-xs">
                     感谢您的反馈！管理员已收到您的留言。
                 </p>
-                <button
-                    type="button"
-                    @click="emit('close')"
-                    class="mt-8 px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
-                    aria-label="关闭"
-                >
+                <button @click="emit('close')"
+                    class="mt-8 px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors">
                     关闭
                 </button>
             </div>
@@ -167,7 +159,7 @@ const submitMessage = async () => {
                 <div class="space-y-4 overflow-y-auto custom-scrollbar flex-1 px-1">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">反馈类型</label>
-                        <select v-model="form.type" aria-label="反馈类型"
+                        <select v-model="form.type"
                             class="block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-white dark:bg-gray-700 dark:text-white py-2 px-3 text-sm">
                             <option value="general">💬 普通留言</option>
                             <option value="feature">✨ 功能建议</option>
@@ -177,13 +169,13 @@ const submitMessage = async () => {
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">昵称 (可选)</label>
-                        <input type="text" v-model="form.nickname" placeholder="您怎么称呼？" aria-label="昵称"
+                        <input type="text" v-model="form.nickname" placeholder="您怎么称呼？"
                             class="block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-white dark:bg-gray-700 dark:text-white py-2 px-3 text-sm">
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">内容</label>
-                        <textarea v-model="form.content" rows="4" placeholder="请详细描述您的建议或遇到的问题..." aria-label="反馈内容"
+                        <textarea v-model="form.content" rows="4" placeholder="请详细描述您的建议或遇到的问题..."
                             class="block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-white dark:bg-gray-700 dark:text-white py-2 px-3 text-sm resize-none"></textarea>
                     </div>
 
@@ -195,16 +187,11 @@ const submitMessage = async () => {
                                 class="bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 font-mono font-bold select-none border border-gray-200 dark:border-gray-600 min-w-[80px] text-center">
                                 {{ captcha.num1 }} {{ captcha.operator }} {{ captcha.num2 }} = ?
                             </div>
-                            <input type="number" v-model="form.captcha" placeholder="答案" aria-label="验证码答案"
+                            <input type="number" v-model="form.captcha" placeholder="答案"
                                 class="block w-24 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-white dark:bg-gray-700 dark:text-white py-2 px-3 text-sm"
                                 @keydown.enter="submitMessage">
-                            <button
-                                type="button"
-                                @click="generateCaptcha"
-                                class="text-gray-400 hover:text-indigo-500 transition-colors p-1"
-                                title="刷新验证码"
-                                aria-label="刷新验证码"
-                            >
+                            <button type="button" @click="generateCaptcha"
+                                class="text-gray-400 hover:text-indigo-500 transition-colors p-1" title="刷新验证码">
                                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -225,21 +212,12 @@ const submitMessage = async () => {
 
                 <!-- Footer -->
                 <div class="mt-6 flex justify-end gap-3 pt-2">
-                    <button
-                        type="button"
-                        @click="emit('close')"
-                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600 transition-colors"
-                        aria-label="取消"
-                    >
+                    <button @click="emit('close')"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600 transition-colors">
                         取消
                     </button>
-                    <button
-                        type="button"
-                        @click="submitMessage"
-                        :disabled="submitting || !form.content"
-                        class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md active:scale-95"
-                        aria-label="提交反馈"
-                    >
+                    <button @click="submitMessage" :disabled="submitting || !form.content"
+                        class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md active:scale-95">
                         {{ submitting ? '提交中...' : '提交反馈' }}
                     </button>
                 </div>

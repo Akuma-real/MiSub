@@ -80,19 +80,31 @@ export async function handleMisubRequest(context) {
                 targetMisubs = [{ id: 'expired-node', url: DEFAULT_EXPIRED_NODE, name: '您的订阅已到期', isExpiredNode: true }]; // Set expired node as the only targetMisub
             } else {
                 subName = profile.name;
-                const profileSubIds = new Set(profile.subscriptions);
-                const profileNodeIds = new Set(profile.manualNodes);
-                targetMisubs = allMisubs.filter(item => {
-                    const isSubscription = item.url.startsWith('http');
-                    const isManualNode = !isSubscription;
+                targetMisubs = [];
+                // Create a map for quick lookup
+                const misubMap = new Map(allMisubs.map(item => [item.id, item]));
 
-                    // Check if the item belongs to the current profile and is enabled
-                    const belongsToProfile = (isSubscription && profileSubIds.has(item.id)) || (isManualNode && profileNodeIds.has(item.id));
-                    if (!item.enabled || !belongsToProfile) {
-                        return false;
-                    }
-                    return true;
-                });
+                // 1. Add subscriptions in order defined by profile
+                const profileSubIds = profile.subscriptions || [];
+                if (Array.isArray(profileSubIds)) {
+                    profileSubIds.forEach(id => {
+                        const sub = misubMap.get(id);
+                        if (sub && sub.enabled && sub.url.startsWith('http')) {
+                            targetMisubs.push(sub);
+                        }
+                    });
+                }
+
+                // 2. Add manual nodes in order defined by profile
+                const profileNodeIds = profile.manualNodes || [];
+                if (Array.isArray(profileNodeIds)) {
+                    profileNodeIds.forEach(id => {
+                        const node = misubMap.get(id);
+                        if (node && node.enabled && !node.url.startsWith('http')) {
+                            targetMisubs.push(node);
+                        }
+                    });
+                }
             }
             effectiveSubConverter = profile.subConverter && profile.subConverter.trim() !== '' ? profile.subConverter : config.subConverter;
             effectiveSubConfig = profile.subConfig && profile.subConfig.trim() !== '' ? profile.subConfig : config.subConfig;
@@ -100,12 +112,14 @@ export async function handleMisubRequest(context) {
             // 判断是否需要在 subconverter 中启用 emoji：使用回退逻辑（订阅组 > 全局 > 默认）
             const defaultTemplate = '{emoji}{region}-{protocol}-{index}';
             const globalNodeTransform = config.defaultNodeTransform || {};
-            const profileNodeTransform = profile.nodeTransform || {};
+            const profileNodeTransform = profile.nodeTransform ?? null;
+            const hasProfileNodeTransform =
+                profileNodeTransform && Object.keys(profileNodeTransform).length > 0;
 
-            // 确定有效的 nodeTransform 配置
-            const effectiveTransform = profileNodeTransform.enabled !== undefined
+            // 确定有效的 nodeTransform 配置（全局 vs 订阅组完整覆盖）
+            const effectiveTransform = hasProfileNodeTransform
                 ? profileNodeTransform
-                : (globalNodeTransform.enabled ? globalNodeTransform : profileNodeTransform);
+                : globalNodeTransform;
 
             const userTemplate = effectiveTransform?.rename?.template?.template || defaultTemplate;
             const templateEnabled = effectiveTransform?.enabled && effectiveTransform?.rename?.template?.enabled;
@@ -271,19 +285,32 @@ export async function handleMisubRequest(context) {
 
         // 设置优先级：订阅组设置 > 全局设置 > 内置默认值
         // prefixSettings 回退逻辑
-        const effectivePrefixSettings = {
-            ...(config.defaultPrefixSettings || {}),    // 全局设置（已包含内置默认值）
-            ...(currentProfile?.prefixSettings || {})   // 订阅组设置覆盖
-        };
+        const globalPrefixSettings = config.defaultPrefixSettings || {};
+        const profilePrefixSettings = currentProfile?.prefixSettings || null;
+        const effectivePrefixSettings = { ...globalPrefixSettings };
+
+        if (profilePrefixSettings && typeof profilePrefixSettings === 'object') {
+            if (profilePrefixSettings.enableManualNodes !== null && profilePrefixSettings.enableManualNodes !== undefined) {
+                effectivePrefixSettings.enableManualNodes = profilePrefixSettings.enableManualNodes;
+            }
+            if (profilePrefixSettings.enableSubscriptions !== null && profilePrefixSettings.enableSubscriptions !== undefined) {
+                effectivePrefixSettings.enableSubscriptions = profilePrefixSettings.enableSubscriptions;
+            }
+            if (profilePrefixSettings.manualNodePrefix && profilePrefixSettings.manualNodePrefix.trim() !== '') {
+                effectivePrefixSettings.manualNodePrefix = profilePrefixSettings.manualNodePrefix;
+            }
+        }
 
         // nodeTransform 回退逻辑
         const globalNodeTransform = config.defaultNodeTransform || {};
-        const profileNodeTransform = currentProfile?.nodeTransform || {};
+        const profileNodeTransform = currentProfile?.nodeTransform ?? null;
+        const hasProfileNodeTransform =
+            profileNodeTransform && Object.keys(profileNodeTransform).length > 0;
 
-        // 深度合并 nodeTransform（订阅组优先）
-        const effectiveNodeTransform = profileNodeTransform.enabled !== undefined
-            ? profileNodeTransform  // 如果订阅组明确启用/禁用了转换，使用订阅组设置
-            : (globalNodeTransform.enabled ? globalNodeTransform : profileNodeTransform);  // 否则尝试全局设置
+        // nodeTransform 使用整体覆盖逻辑
+        const effectiveNodeTransform = hasProfileNodeTransform
+            ? profileNodeTransform
+            : globalNodeTransform;
 
         const generationSettings = {
             ...effectivePrefixSettings,

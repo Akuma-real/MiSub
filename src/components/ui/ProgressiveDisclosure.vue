@@ -87,10 +87,7 @@ const levelClasses = computed(() => {
       <!-- 展开/收起图标 -->
       <button 
         v-if="collapsible"
-        type="button"
         class="ml-4 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 smooth-all"
-        :aria-label="isExpanded ? '收起' : '展开'"
-        :aria-expanded="isExpanded"
       >
         <svg 
           class="w-5 h-5 text-gray-400 smooth-transform"

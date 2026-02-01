@@ -49,7 +49,7 @@ const updateValue = (event) => {
 
 <template>
   <div class="w-full">
-    <label v-if="label" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 ml-1" :for="id">
+    <label v-if="label" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 ml-1">
       {{ label }}
     </label>
     <div class="relative group">
@@ -70,13 +70,11 @@ const updateValue = (event) => {
       </div>
       
       <input
-        :id="id"
         :value="modelValue"
         @input="updateValue"
         :type="type"
         :placeholder="placeholder"
         :disabled="disabled"
-        :aria-label="label || placeholder || '输入'"
         class="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl py-3 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 dark:focus:border-primary-500 focus:outline-none transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
         :class="[
             hasIcon ? 'pl-10 pr-4' : (hasPrefix ? 'pl-10 pr-4' : 'px-4'),

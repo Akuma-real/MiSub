@@ -68,11 +68,9 @@ const changeTab = (tabId) => {
       <button
         v-for="tab in tabs"
         :key="tab.id"
-        type="button"
         @click="changeTab(tab.id)"
         class="mobile-nav-item ripple-effect"
         :class="{ active: activeTab === tab.id }"
-        :aria-current="activeTab === tab.id ? 'page' : undefined"
       >
         <span v-html="tab.icon"></span>
         <span>{{ tab.label }}</span>

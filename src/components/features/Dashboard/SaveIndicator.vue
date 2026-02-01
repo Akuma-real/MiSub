@@ -101,11 +101,9 @@ const saveButtonClass = computed(() => {
 
         <!-- Save Button -->
         <button
-          type="button"
           :class="saveButtonClass"
           :disabled="saveState === 'saving' || (!dirty && saveState === 'idle')"
           @click="$emit('save')"
-          aria-label="保存更改"
         >
           {{ saveButtonText }}
         </button>

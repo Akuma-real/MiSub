@@ -31,7 +31,7 @@ function copyCronUrl() {
 <template>
     <!-- 自动任务配置 (Cron) 卡片 -->
     <div
-        class="bg-white dark:bg-gray-800 rounded-3xl p-6 space-y-4 border border-gray-100 dark:border-gray-700 elevation-2 hover:elevation-3 transition-shadow duration-300">
+        class="bg-white/90 dark:bg-gray-900/70 rounded-3xl p-6 space-y-5 border border-gray-100/80 dark:border-white/10 shadow-sm transition-shadow duration-300">
         <div class="flex justify-between items-start">
             <div>
                 <h3 class="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2">
@@ -46,12 +46,8 @@ function copyCronUrl() {
                     定时更新所有订阅的流量信息和节点数量，并在订阅临期或流量不足时通过 Telegram 发送提醒。
                 </p>
             </div>
-            <button
-                type="button"
-                @click="showCronGuide = !showCronGuide"
-                class="text-blue-600 hover:text-blue-500 text-xs font-medium"
-                :aria-expanded="showCronGuide"
-            >
+            <button @click="showCronGuide = !showCronGuide"
+                class="text-blue-600 hover:text-blue-500 text-xs font-medium">
                 {{ showCronGuide ? '收起' : '如何配置?' }}
             </button>
         </div>
@@ -59,12 +55,8 @@ function copyCronUrl() {
         <!-- Cron Secret 输入框 -->
         <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Cron Secret</label>
-            <input
-                type="text"
-                v-model="settings.cronSecret"
-                placeholder="自定义一个密钥，用于保护定时任务接口"
-                aria-label="Cron Secret"
-                class="block w-full px-3 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-300 dark:border-gray-600 rounded-xl shadow-xs focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:text-white transition-colors">
+            <input type="text" v-model="settings.cronSecret" placeholder="自定义一个密钥，用于保护定时任务接口"
+                class="block w-full px-3 py-2.5 bg-white/70 dark:bg-gray-900/50 border border-gray-200/80 dark:border-white/10 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 sm:text-sm dark:text-white transition-colors">
             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                 设置一个随机字符串用于验证定时任务请求，保存后将自动生成访问链接
             </p>
@@ -76,14 +68,10 @@ function copyCronUrl() {
                 Cron 访问链接（自动生成）
             </label>
             <div class="flex rounded-xl shadow-xs">
-                <input type="text" :value="cronUrl" readonly aria-label="Cron 访问链接"
+                <input type="text" :value="cronUrl" readonly
                     class="flex-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-l-xl sm:text-sm dark:text-white font-mono text-xs">
-                <button
-                    @click="copyCronUrl"
-                    type="button"
-                    class="inline-flex items-center px-4 py-2 border border-l-0 border-gray-300 dark:border-gray-600 rounded-r-xl bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 focus:outline-hidden"
-                    aria-label="复制 Cron 链接"
-                >
+                <button @click="copyCronUrl" type="button"
+                    class="inline-flex items-center px-4 py-2 border border-l-0 border-gray-300 dark:border-gray-600 rounded-r-xl bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 focus:outline-hidden">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -95,7 +83,7 @@ function copyCronUrl() {
             </p>
         </div>
         <div v-else
-            class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md p-3">
+            class="bg-yellow-50/80 dark:bg-yellow-900/20 border border-yellow-200/80 dark:border-yellow-800/70 rounded-lg p-3">
             <p class="text-xs text-yellow-700 dark:text-yellow-300">
                 💡 填写 Cron Secret 后，将自动生成访问链接
             </p>

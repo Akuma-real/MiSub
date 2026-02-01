@@ -3,207 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0f172a" />
     <title>MiSub - 离线模式</title>
     <style>
-        :root {
-            color-scheme: light dark;
-            --bg: #f8fafc;
-            --card: rgba(255, 255, 255, 0.85);
-            --text: #0f172a;
-            --muted: #64748b;
-            --primary: #4f46e5;
-            --border: rgba(148, 163, 184, 0.2);
-        }
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg: #0b1120;
-                --card: rgba(15, 23, 42, 0.75);
-                --text: #f8fafc;
-                --muted: #94a3b8;
-                --primary: #818cf8;
-                --border: rgba(148, 163, 184, 0.2);
-            }
-        }
         body {
-            font-family: 'Plus Jakarta Sans', 'Outfit', 'Segoe UI', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             margin: 0;
             padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            background:
-                radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.12), transparent 55%),
-                radial-gradient(circle at 100% 100%, rgba(14, 165, 233, 0.12), transparent 55%),
-                var(--bg);
-            color: var(--text);
+            color: white;
         }
         .container {
             text-align: center;
-            padding: 2.5rem 2.25rem;
-            max-width: 440px;
-            border-radius: 28px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            box-shadow: 0 30px 60px -40px rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(12px);
+            padding: 2rem;
+            max-width: 400px;
         }
         .icon {
-            width: 88px;
-            height: 88px;
-            margin: 0 auto 1.5rem;
-            border-radius: 24px;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 2rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(99, 102, 241, 0.12);
-            color: var(--primary);
         }
         h1 {
             font-size: 1.5rem;
-            margin-bottom: 0.75rem;
-            font-weight: 700;
+            margin-bottom: 1rem;
+            font-weight: 600;
         }
         p {
             font-size: 1rem;
-            color: var(--muted);
+            opacity: 0.9;
             line-height: 1.6;
-            margin-bottom: 1.5rem;
-        }
-        .actions {
-            display: flex;
-            gap: 0.75rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
         .btn {
-            background: var(--primary);
-            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
             color: white;
-            padding: 0.7rem 1.4rem;
-            border-radius: 12px;
-            font-size: 0.95rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+            transition: all 0.3s ease;
             text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 12px 30px -16px rgba(79, 70, 229, 0.7);
-        }
-        .btn.secondary {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text);
-            box-shadow: none;
+            display: inline-block;
         }
         .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
             transform: translateY(-1px);
-            opacity: 0.95;
         }
         .features {
+            margin-top: 2rem;
             text-align: left;
-            border-top: 1px solid var(--border);
-            padding-top: 1.25rem;
-            margin-top: 1.25rem;
         }
         .feature {
             display: flex;
             align-items: center;
             margin-bottom: 0.75rem;
             font-size: 0.9rem;
-            color: var(--muted);
-        }
-        .feature:last-child {
-            margin-bottom: 0;
         }
         .feature-icon {
             width: 16px;
             height: 16px;
             margin-right: 0.5rem;
-            color: var(--primary);
-        }
-        .status {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.85rem;
-            color: var(--muted);
-        }
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 999px;
-            background: #f97316;
-        }
-        .dot.online {
-            background: #22c55e;
+            opacity: 0.8;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="icon">
-            <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M2 12s3.5-6.5 10-6.5 10 6.5 10 6.5-3.5 6.5-10 6.5-10-6.5-10-6.5z"></path>
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                 <circle cx="12" cy="12" r="3"></circle>
             </svg>
         </div>
-
-        <h1>当前离线</h1>
-        <p>网络暂不可用，但已缓存的页面仍可浏览。恢复连接后将自动同步最新数据。</p>
-
-        <div class="actions">
-            <button class="btn" onclick="window.location.reload()">重新连接</button>
-            <a class="btn secondary" href="/">返回主页</a>
-        </div>
-
-        <div class="status">
-            <span class="dot" id="statusDot"></span>
-            <span id="statusText">离线状态</span>
-        </div>
-
+        
+        <h1>您当前处于离线状态</h1>
+        <p>网络连接似乎出现了问题，但您仍然可以查看已缓存的内容。</p>
+        
+        <button class="btn" onclick="window.location.reload()">重新连接</button>
+        
         <div class="features">
             <div class="feature">
                 <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="20,6 9,17 4,12"></polyline>
                 </svg>
-                已缓存的订阅和配置可继续查看
+                离线时可查看已缓存的订阅
             </div>
             <div class="feature">
                 <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="20,6 9,17 4,12"></polyline>
                 </svg>
-                恢复网络后自动尝试同步
+                数据会在连接恢复后同步
             </div>
             <div class="feature">
                 <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="20,6 9,17 4,12"></polyline>
                 </svg>
-                建议保持应用常驻以加速更新
+                PWA应用离线体验优化
             </div>
         </div>
     </div>
     
     <script>
-        const statusDot = document.getElementById('statusDot');
-        const statusText = document.getElementById('statusText');
-
-        const updateStatus = () => {
-            const online = navigator.onLine;
-            statusDot.classList.toggle('online', online);
-            statusText.textContent = online ? '已恢复连接' : '离线状态';
-            if (online) {
-                setTimeout(() => window.location.reload(), 600);
+        // 定期检查网络连接
+        setInterval(() => {
+            if (navigator.onLine) {
+                window.location.reload();
             }
-        };
-
-        updateStatus();
-        window.addEventListener('online', updateStatus);
-        window.addEventListener('offline', updateStatus);
-        setInterval(updateStatus, 5000);
+        }, 5000);
+        
+        // 监听网络状态变化
+        window.addEventListener('online', () => {
+            window.location.reload();
+        });
     </script>
 </body>
 </html>

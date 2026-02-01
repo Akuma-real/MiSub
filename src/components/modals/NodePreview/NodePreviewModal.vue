@@ -31,7 +31,7 @@ const allNodes = ref([]); // 存储所有节点
 const currentPage = ref(1);
 const pageSize = ref(24);
 const viewMode = ref('list'); // 'list' 或 'card'
-const showProcessed = ref(false); // 是否显示处理后的节点名称
+const showProcessed = ref(true); // 是否显示处理后的节点名称（默认显示处理后结果）
 
 // 响应式视图模式 - 移动端强制卡片视图
 const effectiveViewMode = computed(() => {
@@ -396,10 +396,8 @@ const handleKeydown = (e) => {
             {{ title }}
           </h3>
           <button
-            type="button"
             @click="$emit('update:show', false)"
             class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            aria-label="关闭"
           >
             <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -490,10 +488,8 @@ const handleKeydown = (e) => {
               </svg>
               <p class="mt-4 text-sm text-red-600 dark:text-red-400">{{ error }}</p>
               <button
-                type="button"
                 @click="loadNodes"
                 class="mt-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg transition-colors"
-                aria-label="重试"
               >
                 重试
               </button>

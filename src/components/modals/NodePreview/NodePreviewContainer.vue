@@ -123,10 +123,8 @@ onMounted(() => {
               <div class="text-red-500 text-lg font-medium mb-2">加载失败</div>
               <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">{{ error }}</p>
               <button
-                type="button"
                 @click="loadNodes"
                 class="mt-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg transition-colors"
-                aria-label="重试"
               >
                 重试
               </button>

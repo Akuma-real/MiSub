@@ -61,10 +61,8 @@ watch(() => toast.id, () => {
       <div class="relative p-4">
         <!-- 关闭按钮 -->
         <button
-          type="button"
           @click="isVisible = false"
           class="toast-close-btn absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 transition-colors focus:outline-none focus:ring-2 focus:ring-white/50"
-          aria-label="关闭提示"
         >
           <svg class="w-4 h-4 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />

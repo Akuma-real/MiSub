@@ -252,8 +252,6 @@ const toggleCollapse = () => {
             type="button"
             class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
             @click="toggleCollapse"
-            :aria-label="isCollapsed ? '展开过滤器' : '收起过滤器'"
-            :aria-expanded="!isCollapsed"
           >
             <svg
               class="w-4 h-4 transition-transform"
@@ -273,7 +271,6 @@ const toggleCollapse = () => {
             :disabled="loading"
             class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
             @click="resetFilters"
-            aria-label="重置过滤器"
           >
             重置
           </button>
@@ -285,7 +282,6 @@ const toggleCollapse = () => {
             :disabled="loading"
             class="px-3 py-1.5 text-sm border border-transparent rounded-md text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50"
             @click="applyFilters"
-            aria-label="应用过滤器"
           >
             应用
           </button>
@@ -306,25 +302,22 @@ const toggleCollapse = () => {
           class="filter-item"
         >
           <!-- 标签 -->
-           <label
-             v-if="filter.label"
-             :for="`filter-${filter.key}`"
-             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-           >
-             {{ filter.label }}
-           </label>
+          <label
+            v-if="filter.label"
+            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          >
+            {{ filter.label }}
+          </label>
 
           <!-- 输入控件 -->
           <div class="filter-input">
             <!-- 文本输入 -->
             <input
               v-if="filter.type === 'text' || filter.type === 'search'"
-              :id="`filter-${filter.key}`"
               :type="filter.type === 'search' ? 'search' : 'text'"
               :placeholder="filter.placeholder"
               :value="filterValue(filter)"
               :disabled="loading || filter.disabled"
-              :aria-label="filter.label || filter.placeholder || '过滤条件'"
               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50"
               @input="handleFilterChange(filter, $event.target.value)"
             />
@@ -332,7 +325,6 @@ const toggleCollapse = () => {
             <!-- 数字输入 -->
             <input
               v-else-if="filter.type === 'number'"
-              :id="`filter-${filter.key}`"
               type="number"
               :placeholder="filter.placeholder"
               :value="filterValue(filter)"
@@ -340,7 +332,6 @@ const toggleCollapse = () => {
               :min="filter.min"
               :max="filter.max"
               :step="filter.step"
-              :aria-label="filter.label || filter.placeholder || '数字过滤条件'"
               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50"
               @input="handleFilterChange(filter, Number($event.target.value))"
             />
@@ -348,10 +339,8 @@ const toggleCollapse = () => {
             <!-- 选择器 -->
             <select
               v-else-if="filter.type === 'select'"
-              :id="`filter-${filter.key}`"
               :value="filterValue(filter)"
               :disabled="loading || filter.disabled"
-              :aria-label="filter.label || filter.placeholder || '选择过滤条件'"
               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50"
               @change="handleFilterChange(filter, $event.target.value)"
             >
@@ -368,11 +357,9 @@ const toggleCollapse = () => {
             <!-- 多选器 -->
             <select
               v-else-if="filter.type === 'multiselect'"
-              :id="`filter-${filter.key}`"
               multiple
               :value="Array.isArray(filterValue(filter)) ? filterValue(filter) : []"
               :disabled="loading || filter.disabled"
-              :aria-label="filter.label || '多选过滤条件'"
               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50"
               @change="handleFilterChange(filter, Array.from($event.target.selectedOptions, option => option.value))"
             >
@@ -394,7 +381,6 @@ const toggleCollapse = () => {
                 type="checkbox"
                 :checked="Boolean(filterValue(filter))"
                 :disabled="loading || filter.disabled"
-                :aria-label="filter.checkboxLabel || filter.label || '勾选过滤条件'"
                 class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                 @change="handleFilterChange(filter, $event.target.checked)"
               />

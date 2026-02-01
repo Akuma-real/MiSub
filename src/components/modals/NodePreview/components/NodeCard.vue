@@ -56,11 +56,9 @@ const emit = defineEmits(['copy']);
 
         <!-- 右侧：操作按钮 -->
         <button
-          type="button"
           @click="emit('copy', node, node.url)"
           class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors bg-gray-50 dark:bg-gray-700/50 text-gray-400 active:bg-indigo-50 active:text-indigo-600"
           :class="{ 'text-green-600 bg-green-50': copiedNodeId === node.url }"
-          aria-label="复制节点链接"
         >
           <svg v-if="copiedNodeId !== node.url" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 01-2-2V5a2 2 0 012-2h4.586"></path>
@@ -112,11 +110,9 @@ const emit = defineEmits(['copy']);
 
           <!-- 复制按钮 -->
           <button
-            type="button"
             @click="emit('copy', node, node.url)"
             class="flex-shrink-0 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors group"
             :class="{ 'bg-green-100 dark:bg-green-900': copiedNodeId === node.url }"
-            aria-label="复制节点链接"
           >
             <svg
               v-if="copiedNodeId !== node.url"

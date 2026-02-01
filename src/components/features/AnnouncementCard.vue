@@ -102,13 +102,9 @@ onMounted(() => {
                     </div>
 
                     <!-- Close Button (Always visible if dismissible) -->
-                    <button
-                        v-if="announcement.dismissible"
-                        type="button"
-                        @click="dismiss"
+                    <button v-if="announcement.dismissible" @click="dismiss"
                         class="flex-shrink-0 p-1.5 -mr-1 rounded-md text-gray-400 hover:text-gray-500 hover:bg-black/5 dark:hover:bg-white/10 transition-colors z-10"
-                        title="关闭公告"
-                        aria-label="关闭公告">
+                        title="关闭公告">
                         <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

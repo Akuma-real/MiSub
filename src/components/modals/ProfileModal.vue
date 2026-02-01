@@ -4,6 +4,11 @@ import Modal from '../forms/Modal.vue';
 import ProfileForm from './ProfileModal/ProfileForm.vue';
 import SubscriptionSelector from './ProfileModal/SubscriptionSelector.vue';
 import NodeSelector from './ProfileModal/NodeSelector.vue';
+import { useManualNodes } from '../../composables/useManualNodes.js';
+import { useDataStore } from '../../stores/useDataStore.js';
+
+const dataStore = useDataStore();
+const { manualNodeGroups } = useManualNodes(dataStore.markDirty);
 
 const props = defineProps({
   show: Boolean,
@@ -18,7 +23,7 @@ const emit = defineEmits(['update:show', 'save']);
 const localProfile = ref({});
 const subscriptionSearchTerm = ref('');
 const nodeSearchTerm = ref('');
-const activeManualNodeColorFilter = ref(null);
+const activeManualNodeGroupFilter = ref(null);
 const showAdvanced = ref(false);
 const uiText = {
   prefixTitle: '\u8282\u70b9\u524d\u7f00\u8bbe\u7f6e',
@@ -30,6 +35,7 @@ const uiText = {
   nodeTransformTitle: '\u8282\u70b9\u51c0\u5316\u7ba1\u9053'
 };
 const prefixToggleOptions = [
+  { label: '\u9ed8\u8ba4(\u5168\u5c40)', value: null },
   { label: '\u542f\u7528', value: true },
   { label: '\u7981\u7528', value: false }
 ];
@@ -155,8 +161,12 @@ const filteredSubscriptions = computed(() => {
 const filteredManualNodes = computed(() => {
   let nodes = props.allManualNodes;
 
-  if (activeManualNodeColorFilter.value) {
-    nodes = nodes.filter(n => n.colorTag === activeManualNodeColorFilter.value);
+      if (activeManualNodeGroupFilter.value) {
+    if (activeManualNodeGroupFilter.value === '默认') {
+      nodes = nodes.filter(n => !n.group);
+    } else {
+      nodes = nodes.filter(n => n.group === activeManualNodeGroupFilter.value);
+    }
   }
 
   if (!nodeSearchTerm.value) {
@@ -193,27 +203,19 @@ watch(() => props.profile, (newProfile) => {
         profileCopy.expiresAt = '';
       }
     }
-    // 初始化前缀设置
-    if (!profileCopy.prefixSettings) {
-      profileCopy.prefixSettings = {
-        enableManualNodes: true,
-        enableSubscriptions: true,
-        manualNodePrefix: '\u624b\u52a8\u8282\u70b9'
-      };
+    if (!profileCopy.prefixSettings || typeof profileCopy.prefixSettings !== 'object') {
+      profileCopy.prefixSettings = {};
     }
     profileCopy.prefixSettings.enableManualNodes =
-      profileCopy.prefixSettings.enableManualNodes ?? true;
+      profileCopy.prefixSettings.enableManualNodes ?? null;
     profileCopy.prefixSettings.enableSubscriptions =
-      profileCopy.prefixSettings.enableSubscriptions ?? true;
-    if (!profileCopy.prefixSettings.manualNodePrefix) {
-      profileCopy.prefixSettings.manualNodePrefix = '\u624b\u52a8\u8282\u70b9';
-    }
+      profileCopy.prefixSettings.enableSubscriptions ?? null;
+    profileCopy.prefixSettings.manualNodePrefix =
+      profileCopy.prefixSettings.manualNodePrefix ?? '';
     if (Object.prototype.hasOwnProperty.call(profileCopy.prefixSettings, 'enableNodeEmoji')) {
       delete profileCopy.prefixSettings.enableNodeEmoji;
     }
-    if (!profileCopy.nodeTransform) {
-      profileCopy.nodeTransform = createDefaultNodeTransform();
-    }
+    profileCopy.nodeTransform = profileCopy.nodeTransform ?? null;
     localProfile.value = profileCopy;
   } else {
     localProfile.value = { 
@@ -226,11 +228,11 @@ watch(() => props.profile, (newProfile) => {
       isPublic: true, // [新增] 默认为 true
       description: '', // [新增]
       prefixSettings: {
-        enableManualNodes: true,
-        enableSubscriptions: true,
-        manualNodePrefix: '\u624b\u52a8\u8282\u70b9'
+        enableManualNodes: null,
+        enableSubscriptions: null,
+        manualNodePrefix: ''
       },
-      nodeTransform: createDefaultNodeTransform()
+      nodeTransform: null
     };
   }
 }, { deep: true, immediate: true });
@@ -297,6 +299,7 @@ const handleDeselectAll = (listName, sourceArray) => {
           :show-advanced="showAdvanced"
           :ui-text="uiText"
           :prefix-toggle-options="prefixToggleOptions"
+          :create-default-node-transform="createDefaultNodeTransform"
           @toggle-advanced="showAdvanced = !showAdvanced"
         />
 
@@ -317,10 +320,11 @@ const handleDeselectAll = (listName, sourceArray) => {
             :nodes="allManualNodes"
             :filtered-nodes="filteredManualNodes"
             :search-term="nodeSearchTerm"
-            :active-color-filter="activeManualNodeColorFilter"
+            :active-group-filter="activeManualNodeGroupFilter"
+            :groups="manualNodeGroups"
             :selected-ids="localProfile.manualNodes || []"
             @update:search-term="nodeSearchTerm = $event"
-            @update:color-filter="activeManualNodeColorFilter = $event"
+            @update:group-filter="activeManualNodeGroupFilter = $event"
             @toggle-selection="toggleSelection('manualNodes', $event)"
             @select-all="handleSelectAll('manualNodes', filteredManualNodes)"
             @deselect-all="handleDeselectAll('manualNodes', filteredManualNodes)"

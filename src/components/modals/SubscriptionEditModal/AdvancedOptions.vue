@@ -14,9 +14,10 @@ const props = defineProps({
       自定义 User-Agent
       <span class="text-xs text-gray-500 ml-2">(可选,留空使用默认)</span>
     </label>
-    <select id="sub-edit-ua" v-model="editingSubscription.customUserAgent" aria-label="自定义 User-Agent"
+    <select id="sub-edit-ua" v-model="editingSubscription.customUserAgent"
       class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md dark:text-white">
       <option value="">使用默认 UA</option>
+      <option value="MiSub">MiSub</option>
       <option value="clash.meta">Clash Meta</option>
       <option value="v2rayN/7.23">v2rayN</option>
       <option value="Shadowrocket/1.9.0">Shadowrocket</option>
@@ -30,7 +31,7 @@ const props = defineProps({
   <!-- 备注 -->
   <div>
     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">备注</label>
-    <textarea v-model="editingSubscription.notes" placeholder="例如: 官网: example.com | 价格: ¥20/月 | 到期: 2024-12-31" aria-label="备注"
+    <textarea v-model="editingSubscription.notes" placeholder="例如: 官网: example.com | 价格: ¥20/月 | 到期: 2024-12-31"
       rows="2"
       class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md dark:text-white"></textarea>
   </div>

@@ -113,7 +113,7 @@ export function convertVlessToUrl(proxy) {
             params.set('security', 'reality');
             if (proxy['reality-opts']) {
                 if (proxy['reality-opts']['public-key']) {
-                    params.set('publicKey', proxy['reality-opts']['public-key']);
+                    params.set('pbk', proxy['reality-opts']['public-key']);
                 }
                 if (proxy['reality-opts']['short-id']) {
                     params.set('sid', proxy['reality-opts']['short-id']);
